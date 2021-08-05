@@ -1,0 +1,220 @@
+@import url('https://cdn.jsdelivr.net/npm/modern-normalize@1.1.0/modern-normalize.min.css');
+
+/* #region:Atkinson */
+/* regular */
+@font-face {
+	font-family: 'Atkinson-Hyperlegible';
+	src: url('../fonts/atkinson/woff2/Atkinson-Hyperlegible-Regular-102a.woff2')
+			format('woff2'),
+		url('../fonts/atkinson/woff/Atkinson-Hyperlegible-Regular-102.woff')
+			format('woff');
+	font-weight: normal;
+	font-style: normal;
+	font-display: block;
+}
+
+/* bold */
+@font-face {
+	font-family: 'Atkinson-Hyperlegible';
+	src: url('../fonts/atkinson/woff2/Atkinson-Hyperlegible-Bold-102a.woff2')
+			format('woff2'),
+		url('../fonts/atkinson/woff/Atkinson-Hyperlegible-Bold-102.woff')
+			format('woff');
+	font-weight: bold;
+	font-style: normal;
+}
+
+/* italics */
+@font-face {
+	font-family: 'Atkinson-Hyperlegible';
+	src: url('../fonts/atkinson/woff2/Atkinson-Hyperlegible-Italic-102a.woff2')
+			format('woff2'),
+		url('../fonts/atkinson/woff/Atkinson-Hyperlegible-Italic-102.woff')
+			format('woff');
+	font-weight: normal;
+	font-style: italic;
+}
+/* bold italics */
+@font-face {
+	font-family: 'Atkinson-Hyperlegible';
+	src: url('../fonts/atkinson/woff2/Atkinson-Hyperlegible-BoldItalic-102a.woff2')
+			format('woff2'),
+		url('../fonts/atkinson/woff/Atkinson-Hyperlegible-BoldItalic-102.woff')
+			format('woff');
+	font-weight: bold;
+	font-style: italic;
+}
+/* #endregion:Atkinson */
+
+/* #region:Panamera */
+@font-face {
+	font-family: 'Panamera';
+	src: url('../fonts/Panamera/woff2/Panamera-Light.woff2')
+			format('woff2'),
+		url('../fonts/Panamera/woff/Panamera-Light.woff')
+			format('woff');
+	font-weight: normal;
+	font-style: normal;
+	font-display: block;
+}
+
+/* #endregion:Panamera */
+
+:root {
+	/* --black: hsl(180, 1%, 14%); */
+	--bHue: 180;
+	--bSatL: 1%;
+	--bLight: 14%;
+	/* --white: hsl(120, 25%, 95%); */
+	--wHue: 120;
+	--wSatL: 25%;
+	--wLight: 95%;
+
+	/* CSS HSL */
+	--dark-electric-blue: hsl(210, 45%, 45%);
+	--light-coral: hsl(0, 78%, 77%);
+	--peach: hsl(39, 100%, 84%);
+
+	--bgHue: var(--bHue);
+	--bgSat: var(--bSatL);
+	--bgLight: var(--bLight);
+	--bg: hsl(var(--bgHue), var(--bgSat), var(--bgLight));
+	--textHue: var(--wHue);
+	--textSat: var(--wSatL);
+	--textLight: var(--wLight);
+	--text: hsl(var(--textHue), var(--textSat), var(--textLight));
+
+	--shadow: hsla(
+		var(--textHue),
+		var(--textSat),
+		var(--textLight),
+		25%
+	);
+	--primary: var(--dark-electric-blue);
+	--secondary: var(--light-coral);
+	--tertiary: var(--peach);
+
+	--noise: url(../images/egg-shell.png);
+	--inner-max: 45rem;
+
+	--font-base: min(23px, max(1.7vw, 14px));
+	--font-ratio: 1.618;
+
+	--font-medium: var(--font-base);
+	--font-large: calc(var(--font-medium) * var(--font-ratio));
+	--font-extra-large: calc(var(--font-large) * var(--font-ratio));
+	--font-extra-extra-large: calc(
+		var(--font-large) * var(--font-ratio)
+	);
+
+	--font-small: calc(
+		var(--font-medium) / var(--font-inverse-ratio)
+	);
+	--font-extra-small: calc(
+		var(--font-small) / var(--font-inverse-ratio)
+	);
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--bgHue: var(--wHue);
+		--bgSat: var(--wSatL);
+		--bgLight: var(--wLight);
+		--textHue: var(--bHue);
+		--textSat: var(--bSatL);
+		--textLight: var(--bLight);
+	}
+}
+
+.stack,
+.smallStack {
+	margin-left: auto;
+	margin-right: auto;
+}
+.stack > * + * {
+	margin-top: 2rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.smallStack > * + * {
+	margin-top: 1rem;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+body {
+	color: var(--text);
+	background: var(--noise), var(--bg);
+	display: grid;
+	grid-template-columns:
+		minmax(8%, auto) minmax(225px, 45rem)
+		minmax(8%, auto);
+	grid-template-rows: min-content 1fr min-content;
+	grid-template-areas:
+		'lHeader header rHeader'
+		'leftSidebar main rightSidebar'
+		'footer footer footer';
+	/* place-items: center; */
+	height: max(min-content, 100vh);
+	/* justify-content: space-around;
+	align-items: center;
+	height: 100%; */
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	line-height: 1.8;
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	line-break: loose;
+	font-family: Atkinson-Hyperlegible;
+	font-size: var(--font-medium);
+}
+header {
+	grid-area: header;
+	height: min-content;
+	align-items: center;
+	text-align: center;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	width: 100%;
+	box-shadow: 0rem 0rem 0.25rem 0.25rem var(--shadow);
+	margin-block-start: 2rem;
+	font-family: 'Panamera';
+	/* margin-top: ; */
+}
+
+h1 {
+	/* color: var(--secondary); */
+	width: 100%;
+	font-size: var(--font-extra-large);
+	/* text-shadow: 0rem 0rem 0.1rem var(--bg); */
+	text-align: center;
+}
+header > h5 {
+	font-size: var(--font-small);
+}
+
+#content {
+	grid-area: main;
+	margin-top: 3rem;
+	margin-bottom: 3rem;
+	font-family: 'Atkinson-Hyperlegible';
+}
+.chartContainer {
+	/* --size: minmax(3rem, 70%) */
+	/* width: min(60%, 3rem); */
+	/* height: var(--size); */
+	/* margin: auto; */
+	width: min(70%, 20rem);
+	/* clamp(3rem, 70%, calc(var(--inner-max) * 0.5)); */
+	/* height: clamp(3rem, 80%, calc(var(--inner-max)) * 0.5); */
+	/* height: 10em; */
+	position: relative;
+}
+
+footer {
+	grid-area: footer;
+	text-align: center;
+	margin: auto;
+}

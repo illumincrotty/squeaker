@@ -1,0 +1,71 @@
+{
+	"name": "squeaker",
+	"version": "1.0.0",
+	"description": "A tiny (but advanced) simplex noise module",
+	"source": "./src/index.ts",
+	"exports": "./dist/index.modern.js",
+	"main": "./dist/index.js",
+	"module": "./dist/index.module.js",
+	"unpkg": "./dist/index.umd.js",
+	"typings": "./dist/index.d.ts",
+	"sideEffects": false,
+	"files": [
+		"dist",
+		"src"
+	],
+	"scripts": {
+		"serve": "parcel serve public/index.html",
+		"lint": "eslint src --ext .ts",
+		"lint:fix": "eslint src --fix --ext .ts",
+		"build": "pnpm test && microbundle",
+		"build-noTest": "microbundle",
+		"test": "ava test/**/*.spec.ts test/**/*.test.ts",
+		"coverage": "nyc pnpm test",
+		"report": "nyc report --reporter=lcov",
+		"tsdoc": "lehre -d src --formatter tsdoc --write"
+	},
+	"author": "Brian Crotty",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/illumincrotty/squeaker.git"
+	},
+	"bugs": {
+		"url": "https://github.com/illumincrotty/squeaker/issues"
+	},
+	"homepage": "https://github.com/illumincrotty/squeaker#readme",
+	"keywords": [],
+	"devDependencies": {
+		"@istanbuljs/nyc-config-typescript": "^1.0.1",
+		"@parcel/transformer-sass": "2.0.0-beta.3.1",
+		"@types/node": "^16.4.7",
+		"@typescript-eslint/eslint-plugin": "^4.28.5",
+		"@typescript-eslint/parser": "^4.28.5",
+		"ava": "^3.15.0",
+		"chart.js": "^3.5.0",
+		"eslint": "^7.31.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-plugin-ava": "^12.0.0",
+		"eslint-plugin-prettier": "^3.4.0",
+		"eslint-plugin-promise": "^5.1.0",
+		"eslint-plugin-tsdoc": "^0.2.14",
+		"eslint-plugin-unicorn": "^34.0.1",
+		"lehre": "^1.4.0",
+		"microbundle": "^0.13.3",
+		"nyc": "^15.1.0",
+		"parcel": "^2.0.0-beta.3.1",
+		"prettier": "^2.3.2",
+		"sass": "^1.37.5",
+		"source-map-support": "^0.5.19",
+		"ts-node": "^10.1.0",
+		"typescript": "^4.3.5"
+	},
+	"ava": {
+		"extensions": [
+			"ts"
+		],
+		"require": [
+			"ts-node/register"
+		]
+	}
+}
