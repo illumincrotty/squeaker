@@ -1,5 +1,3 @@
-import type { vector2d } from './util';
-
 export type interpolationFunction = (t: number) => number;
 
 /**
@@ -53,19 +51,6 @@ export const interpolationHermite: interpolationFunction = (
 export const interpolationQuintic: interpolationFunction = (
 	t: number
 ): number => t ** 3 * (10 + t * (-15 + t * 6));
-
-/**
- * Takes the dot product of two vectors
- *
- * ___order does not matter___
- *
- * @param vectorA - a given 2D vector
- * @param vectorB - a given 2D vector
- * @returns scalar value
- */
-export const dotProduct = (vectorA: vector2d, vectorB: vector2d): number => {
-	return vectorA.x * vectorB.x + vectorA.y * vectorB.y;
-};
 
 // export const bilinearInterpolation = (
 // 	zeroZero: vector2d,

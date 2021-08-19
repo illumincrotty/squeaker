@@ -86,3 +86,16 @@ export const consistentModulus = (divisor: number, dividend: number): number =>
 
 export type vector2d = { x: number; y: number };
 export type vector3d = [number, number, number];
+
+/**
+ * Takes the dot product of two vectors
+ *
+ * ___order does not matter___
+ *
+ * @param vectorA - a given 2D vector
+ * @param vectorB - a given 2D vector
+ * @returns scalar value
+ */
+export const dotProduct = (vectorA: vector2d, vectorB: vector2d): number => {
+	return vectorA.x * vectorB.x + vectorA.y * vectorB.y;
+};

@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import test from 'ava';
-import { flatGridGenerator, range, rangeGenerator } from '../src/util';
+import {
+	flatGridGenerator,
+	range,
+	rangeGenerator,
+	dotProduct,
+} from '../src/util';
 
 test('includes minimum excludes maximum', (t) => {
 	const testing = range(0, 1);
@@ -126,4 +131,18 @@ test('flatGrid big test', (t) => {
 		].length,
 		xDiv * yDiv
 	);
+});
+
+const oneZero = { x: 1, y: 0 },
+	negativeOneZero = { x: -1, y: 0 };
+test('dot product postive positive', (t) => {
+	t.is(dotProduct(oneZero, oneZero), 1);
+});
+
+test('dot product postive negative', (t) => {
+	t.is(dotProduct(oneZero, negativeOneZero), -1);
+});
+
+test('dot product partial', (t) => {
+	t.is(dotProduct(oneZero, { x: 0.25, y: 0.25 }), 0.25);
 });
