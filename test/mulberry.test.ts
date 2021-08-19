@@ -12,24 +12,24 @@ test('Mulberry returns number', (t) => {
 });
 
 test('Mulberry is repeatable', (t) => {
-	const mulberry = mulberryFactory(293123);
-	const mulberry2 = mulberryFactory(293123);
+	const mulberry = mulberryFactory(293_123);
+	const mulberry2 = mulberryFactory(293_123);
 
 	t.is(mulberry2(), mulberry());
 });
 
 test('Between 0 and 1', (t) => {
-	const mulberry = mulberryFactory(928334);
+	const mulberry = mulberryFactory(928_334);
 	const oneKRandomNumbers = range(0, 1000).map(mulberry);
 
-	t.true(oneKRandomNumbers.every((num) => num >= 0));
-	t.true(oneKRandomNumbers.every((num) => num < 1));
+	t.true(oneKRandomNumbers.every((number) => number >= 0));
+	t.true(oneKRandomNumbers.every((number) => number < 1));
 });
 
 test('Functional Mulberry', (t) => {
-	const [firstValue, fm] = functionalMulberryFactory(8281024);
-	const [secondValue, fm2v0] = fm();
-	const [secondValueCopy, fm2v1] = fm();
+	const [firstValue, fm] = functionalMulberryFactory(8_281_024);
+	const [secondValue, _fm2v0] = fm();
+	const [secondValueCopy, _fm2v1] = fm();
 	t.is(secondValue, secondValueCopy);
 	t.not(firstValue, secondValue);
 });
