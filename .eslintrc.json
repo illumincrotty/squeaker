@@ -13,6 +13,7 @@
 		"plugin:promise/recommended",
 		"plugin:@typescript-eslint/recommended",
 		"plugin:@typescript-eslint/recommended-requiring-type-checking",
+		"plugin:jsdoc/recommended",
 		"prettier" // Always have prettier last!
 	],
 	"parser": "@typescript-eslint/parser",
@@ -27,7 +28,7 @@
 		"unicorn", // https://github.com/sindresorhus/eslint-plugin-unicorn/tree/main/docs/rules
 		"ava", // https://github.com/avajs/eslint-plugin-ava/tree/main/docs/rules
 		"promise", //https://github.com/xjamundx/eslint-plugin-promise/tree/development/docs/rules
-		"tsdoc"
+		"jsdoc" //https://github.com/gajus/eslint-plugin-jsdoc/tree/master/.README/rules
 	],
 	//eslint rules: https://github.com/eslint/eslint/tree/master/docs/rules
 	"rules": {
@@ -350,7 +351,7 @@
 		//"@typescript-eslint/restrict-plus-operands":"off", //✅🤖 When adding two variables, operands must both be of type number or of type string
 		//"@typescript-eslint/restrict-template-expressions":"off", //✅🤖 Enforce template literal expressions to be of string type
 		//"@typescript-eslint/triple-slash-reference":"off", //✅ Sets preference level for triple slash directives versus ES6-style import declarations
-		//"@typescript-eslint/unbound-method":"off", //✅🤖 Enforces unbound methods are called with their expected scope
+		"@typescript-eslint/unbound-method": "off", //✅🤖 Enforces unbound methods are called with their expected scope
 		"@typescript-eslint/array-type": "error", //🔧 Requires using either T[] or Array<T> for arrays
 		//"@typescript-eslint/ban-tslint-comment":"off", //🔧 Bans // tslint:<rule-flag> comments from being used
 		"@typescript-eslint/class-literal-property-style": "warn", //🔧 Ensures that literals on classes are exposed in a consistent style
@@ -361,7 +362,7 @@
 		"@typescript-eslint/explicit-function-return-type": "off", // Require explicit return types on functions and class methods
 		//"@typescript-eslint/explicit-member-accessibility":"off", //🔧 Require explicit accessibility modifiers on class properties and methods
 		//"@typescript-eslint/member-delimiter-style":"off", //🔧 Require a specific member delimiter style for interfaces and type literals
-		"@typescript-eslint/member-ordering": "error", // Require a consistent member declaration order
+		"@typescript-eslint/member-ordering": "warn", // Require a consistent member declaration order
 		//"@typescript-eslint/method-signature-style":"off", //🔧 Enforces using a particular method signature syntax.
 		//"@typescript-eslint/naming-convention":"off", //🤖 Enforces naming conventions for everything across a codebase
 		//"@typescript-eslint/no-base-to-string":"off", //🤖 Requires that .toString() is only called on objects which provide useful information when stringified
@@ -428,10 +429,10 @@
 		"@typescript-eslint/no-invalid-this": "warn", // Disallow this keywords outside of classes or class-like objects
 		//"@typescript-eslint/no-loop-func":"off", // Disallow function declarations that contain unsafe references inside loop statements
 		//"@typescript-eslint/no-loss-of-precision":"off", // Disallow literal numbers that lose precision
-		"@typescript-eslint/no-magic-numbers": [
-			"warn",
-			{ "ignoreDefaultValues": true, "ignore": [0, 1] }
-		], // Disallow magic numbers
+		// "@typescript-eslint/no-magic-numbers": [
+		// 	"warn",
+		// 	{ "ignoreDefaultValues": true, "ignore": [0, 1] }
+		// ], // Disallow magic numbers
 		//"@typescript-eslint/no-redeclare":"off", // Disallow variable redeclaration
 		//"@typescript-eslint/no-shadow":"off", // Disallow variable declarations from shadowing variables declared in the outer scope
 		//"@typescript-eslint/no-throw-literal":"off", //🤖 Disallow throwing literals as exceptions
@@ -470,11 +471,11 @@
 		//"unicorn/import-style": "error", //✅ Enforce specific import styles per module.
 		//"unicorn/new-for-builtins": "error", //✅🔧 Enforce the use of new for all builtins, except String, Number, Boolean, Symbol and BigInt.
 		//"unicorn/no-abusive-eslint-disable": "error", //✅ Enforce specifying rules to disable in eslint-disable comments.
-		//"unicorn/no-array-callback-reference": "error", //✅ Prevent passing a function reference directly to iterator methods.
+		"unicorn/no-array-callback-reference": "off", //✅ Prevent passing a function reference directly to iterator methods.
 		"unicorn/no-array-for-each": "off", //✅🔧 Prefer for…of over Array#forEach(…).
 		//"unicorn/no-array-method-this-argument": "error", //✅🔧 Disallow using the this argument in array methods.
 		//"unicorn/no-array-push-push": "error", //✅🔧 Enforce combining multiple Array#push() into one call.
-		//"unicorn/no-array-reduce": "error", //✅ Disallow Array#reduce() and Array#reduceRight().
+		"unicorn/no-array-reduce": "off", //✅ Disallow Array#reduce() and Array#reduceRight().
 		//"unicorn/no-console-spaces": "error", //✅🔧 Do not use leading/trailing space between console.log parameters.
 		//"unicorn/no-document-cookie": "error", //✅ Do not use document.cookie directly.
 		//"unicorn/no-for-loop": "error", //✅🔧 Do not use a for loop that can be replaced with a for-of loop.
@@ -607,6 +608,68 @@
 		//prettier
 		"prettier/prettier": "error",
 
-		"tsdoc/syntax": "warn"
+		//#region jsdoc
+		"jsdoc/check-access": "error", // ✅
+		"jsdoc/check-alignment": "warn", // ✅
+		"jsdoc/check-examples": "off",
+		"jsdoc/check-indentation": "off",
+		"jsdoc/check-line-alignment": "off",
+		"jsdoc/check-param-names": ["error", { "enableFixer": true }], // ✅
+		"jsdoc/check-property-names": ["error", { "enableFixer": true }], // ✅
+		"jsdoc/check-syntax": "off",
+		"jsdoc/check-tag-names": 1, // ✅
+		"jsdoc/check-types": "off", // ✅
+		"jsdoc/check-values": "off", // ✅
+		"jsdoc/empty-tags": 1, // ✅
+		"jsdoc/implements-on-classes": 1, // ✅
+		"jsdoc/match-description": [
+			"error",
+			{
+				"mainDescription": {
+					"message": "Capitalize first word of JSDoc block descriptions",
+					"match": "[A-Z].*"
+				},
+				"tags": {
+					"param": {
+						"message": "Description must be at least 5 characters long",
+						"match": "....."
+					}
+				}
+			}
+		],
+		"jsdoc/multiline-blocks": 1, // ✅
+		"jsdoc/newline-after-description": 1, // ✅
+		// "jsdoc/no-bad-blocks": 1,
+		// "jsdoc/no-defaults": 1,
+		// "jsdoc/no-missing-syntax": 1,
+		"jsdoc/no-multi-asterisks": 1, // ✅
+		// "jsdoc/no-restricted-syntax": 1,
+		"jsdoc/no-types": "error",
+		"jsdoc/no-undefined-types": 1, // ✅
+		"jsdoc/require-asterisk-prefix": "error",
+		"jsdoc/require-description": "error",
+		"jsdoc/require-description-complete-sentence": "off",
+		// "jsdoc/require-example": 1,
+		"jsdoc/require-file-overview": "off",
+		"jsdoc/require-hyphen-before-param-description": "error",
+		"jsdoc/require-jsdoc": "error", // ✅
+		"jsdoc/require-param": "error", // ✅
+		"jsdoc/require-param-description": "error", // ✅
+		"jsdoc/require-param-name": "error", // ✅
+		"jsdoc/require-param-type": "off", // ✅
+		"jsdoc/require-property": 1, // ✅
+		"jsdoc/require-property-description": 1, // ✅
+		"jsdoc/require-property-name": 1, // ✅
+		"jsdoc/require-property-type": 1, // ✅
+		"jsdoc/require-returns": 1, // ✅
+		"jsdoc/require-returns-check": 1, // ✅
+		"jsdoc/require-returns-description": "error", // ✅
+		"jsdoc/require-returns-type": "off", // ✅
+		"jsdoc/require-throws": 1,
+		"jsdoc/require-yields": 1, // ✅
+		"jsdoc/require-yields-check": 1, // ✅
+		"jsdoc/tag-lines": 1, // ✅
+		"jsdoc/valid-types": 1 // ✅
+		//#endregion
 	}
 }

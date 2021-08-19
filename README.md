@@ -11,7 +11,7 @@
 
 ---
 
-<p align="center"> A tiny (but advanced) simplex noise module
+<p align="center"> A tiny (but advanced) noise generation module
 </p>
 
 ## 📝 Table of Contents

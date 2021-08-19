@@ -7,5 +7,5 @@
 	"endOfLine": "auto",
 	"quoteProps": "consistent",
 	"singleQuote": true,
-	"printWidth": 70
+	"printWidth": 80
 }
