@@ -95,12 +95,17 @@
 	--tertiary: var(--peach);
 
 	--noise: url(../images/egg-shell.png);
-	--inner-max: 45rem;
 
-	--font-base: min(23px, max(1.7vw, 14px));
-	--font-ratio: 1.618;
+	--font-ratio: 1.333;
 
-	--font-medium: var(--font-base);
+	--font-minimum-size: 15;
+	--font-minimum-size-pixels: calc(var(--font-minimum-size) * 1px);
+	--font-maximum-size: 21;
+	--font-medium: calc(
+		var(--font-minimum-size-pixels) +
+			(var(--font-maximum-size) - var(--font-minimum-size)) *
+			((100vw - 320px) / (1280 - 300))
+	);
 	--font-large: calc(var(--font-medium) * var(--font-ratio));
 	--font-extra-large: calc(var(--font-large) * var(--font-ratio));
 	--font-extra-extra-large: calc(
@@ -127,17 +132,15 @@
 }
 
 .stack,
-.smallStack {
+.small-stack {
 	margin-left: auto;
 	margin-right: auto;
 }
 .stack > * + * {
 	margin-top: 2rem;
-	margin-left: auto;
-	margin-right: auto;
 }
 
-.smallStack > * + * {
+.small-stack > * + * {
 	margin-top: 1rem;
 	margin-left: auto;
 	margin-right: auto;
@@ -148,21 +151,20 @@ body {
 	background: var(--noise), var(--bg);
 	display: grid;
 	grid-template-columns:
-		minmax(8%, auto) minmax(225px, 45rem)
-		minmax(8%, auto);
+		minmax(2ch, 1fr) minmax(200px, 66rem)
+		minmax(2ch, 1fr);
 	grid-template-rows: min-content 1fr min-content;
 	grid-template-areas:
 		'lHeader header rHeader'
 		'leftSidebar main rightSidebar'
 		'footer footer footer';
-	/* place-items: center; */
-	height: max(min-content, 100vh);
-	/* justify-content: space-around;
-	align-items: center;
-	height: 100%; */
+
+	gap: 0 1rem;
+	height: 100%;
 	width: 100%;
 	padding: 0;
 	margin: 0;
+	row-gap: 3rem;
 	line-height: 1.8;
 	overflow-wrap: break-word;
 	word-wrap: break-word;
@@ -173,11 +175,12 @@ body {
 header {
 	grid-area: header;
 	height: min-content;
-	align-items: center;
+	/* align-items: center; */
 	text-align: center;
 	padding-left: 0.5rem;
 	padding-right: 0.5rem;
 	width: 100%;
+	/* width: min-content; */
 	box-shadow: 0rem 0rem 0.25rem 0.25rem var(--shadow);
 	margin-block-start: 2rem;
 	font-family: 'Panamera';
@@ -185,10 +188,8 @@ header {
 }
 
 h1 {
-	/* color: var(--secondary); */
-	width: 100%;
-	font-size: var(--font-extra-large);
-	/* text-shadow: 0rem 0rem 0.1rem var(--bg); */
+	/* width: 100%; */
+	font-size: var(--font-extra-extra-large);
 	text-align: center;
 }
 header > h5 {
@@ -197,22 +198,24 @@ header > h5 {
 
 #content {
 	grid-area: main;
-	margin-top: 3rem;
-	margin-bottom: 3rem;
 	font-family: 'Atkinson-Hyperlegible';
+	width: 100%;
+}
+#content > * {
+	margin-left: auto;
+	margin-right: auto;
 }
 .chartContainer {
-	/* --size: minmax(3rem, 70%) */
-	/* width: min(60%, 3rem); */
-	/* height: var(--size); */
-	/* margin: auto; */
-	width: min(70%, 20rem);
-	/* clamp(3rem, 70%, calc(var(--inner-max) * 0.5)); */
-	/* height: clamp(3rem, 80%, calc(var(--inner-max)) * 0.5); */
-	/* height: 10em; */
 	position: relative;
 }
-
+.chartSquare {
+	width: min(max(100%, 5rem), 23rem);
+	height: fit-content;
+}
+.chartWide {
+	height: fit-content;
+	/* width: min(max(100%, 5rem), 23rem); */
+}
 footer {
 	grid-area: footer;
 	text-align: center;
