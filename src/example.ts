@@ -1,6 +1,7 @@
 const example = {
 	/**
 	 * Description
+	 *
 	 * @param input - any object or primitive value
 	 * @returns a function that always returns that item
 	 */
@@ -10,6 +11,7 @@ const example = {
 
 	/**
 	 * Returns 5
+	 *
 	 * @returns 5
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-magic-numbers
