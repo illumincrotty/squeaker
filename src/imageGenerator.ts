@@ -2,7 +2,6 @@ import { promises, createReadStream, createWriteStream } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { range } from './util';
 import { aleaFactory as _aleaFactory } from './random/alea';
-import { perlin } from './wikipediaPerlin';
 import { PNG } from 'pngjs';
 import { perlinNoise1dFactory, perlinNoise2dFactory } from './squeaker';
 
@@ -65,17 +64,17 @@ export const generateStaticSVG = (): void => {
 	);
 };
 
-export const generate2dNoiseSVG = (): void => {
-	// const noise = perlinNoiseFactory(aleaFactory('').random, 20);
-	void generateSVG(
-		'noise',
-		numberArrayToSvg(
-			generateArray(100, 100, (x: number, y: number) =>
-				perlin(10 + x / 10, y / 10)
-			)
-		)
-	);
-};
+// export const generate2dNoiseSVG = (): void => {
+// 	// const noise = perlinNoiseFactory(aleaFactory('').random, 20);
+// 	void generateSVG(
+// 		'noise',
+// 		numberArrayToSvg(
+// 			generateArray(100, 100, (x: number, y: number) =>
+// 				perlin(10 + x / 10, y / 10)
+// 			)
+// 		)
+// 	);
+// };
 
 // #endregion
 
@@ -112,8 +111,6 @@ export const generatePNG = (
 			);
 		});
 };
-
-const _noisyFunction = (x: number, y: number) => perlin(10 + x / 10, y / 10);
 
 const perlin1d = perlinNoise1dFactory({
 	seed: 1_092_362,

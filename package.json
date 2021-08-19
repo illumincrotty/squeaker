@@ -1,6 +1,6 @@
 {
 	"name": "squeaker",
-	"version": "1.0.0",
+	"version": "0.0.1-alpha.0",
 	"description": "A tiny (but advanced) simplex noise module",
 	"source": "./src/index.ts",
 	"exports": "./dist/index.modern.js",
