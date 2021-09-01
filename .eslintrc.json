@@ -252,7 +252,7 @@
 		//"space-in-parens":"off", //🔧 enforce consistent spacing inside parentheses
 		// "space-infix-ops": "error", //🔧 require spacing around infix operators
 		"space-unary-ops": "error", //🔧 enforce consistent spacing before or after unary operators
-		"spaced-comment": "error", //🔧 enforce consistent spacing after the `//` or `/*` in a comment
+		"spaced-comment": "off", //🔧 enforce consistent spacing after the `//` or `/*` in a comment
 		//"switch-colon-spacing":"off", //🔧 enforce spacing around colons of switch statements
 		//"template-tag-spacing":"off", //🔧 require or disallow spacing between template tags and their literals
 		//"unicode-bom":"off", //🔧 require or disallow Unicode byte order mark (BOM)
