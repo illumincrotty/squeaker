@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>Noise Demo</title>
+
+		<link rel="stylesheet" href="/styles/styles.css" />
+		<link rel="stylesheet" href="/styles/noiseDemo.css" />
+		<!-- <link rel="stylesheet" href="/assets/css/print.css" media="print" /> -->
+
+		<meta
+			name="description"
+			content="visualizations of various noise types"
+		/>
+		<meta property="og:title" content="Noise Demo" />
+		<meta
+			property="og:description"
+			content="visualizations of various noise types"
+		/>
+
+		<!-- TODO: add site image -->
+		<!-- <meta property="og:image" content="replace_image" /> -->
+		<meta property="og:locale" content="en" />
+		<meta property="og:type" content="website" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:dnt" content="on" />
+
+		<!-- TODO: add site url-->
+		<!-- <meta property="og:url" content="replace_url" />
+		<link rel="canonical" href="replace_url" /> -->
+
+		<!-- TODO: add favicon -->
+		<link rel="icon" href="/favicon.ico" />
+		<!-- <link rel="icon" href="/favicon.svg" type="image/svg+xml" /> -->
+
+		<!-- TODO: add theme color -->
+		<!-- <meta name="theme-color" content="replace_theme_color" /> -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/modern-normalize@1.1.0/modern-normalize.min.css"
+			rel="stylesheet"
+		/>
+	</head>
+
+	<body>
+		<script src="./demoSrc/noiseDemo.ts" type="module" defer></script>
+		<!-- <script src="/dist/index.js" type="module"></script> -->
+		<header>
+			<h1>Noise Demos</h1>
+			<h2>by Brian Crotty</h2>
+		</header>
+		<div class="stack" id="content" style="--gap: 1rem">
+			<figure>
+				<canvas width="500" height="500" id="perlin3d-default"></canvas>
+				<figcaption>2d slices of 3d Perlin Noise</figcaption>
+			</figure>
+
+			<figure>
+				<canvas width="500" height="500" id="perlin3d-scale"></canvas>
+				<figcaption>
+					2d slices of 3d Perlin Noise w/ improved scaling
+				</figcaption>
+			</figure>
+
+			<figure>
+				<canvas width="500" height="500" id="perlin2d"></canvas>
+				<figcaption>2d Perlin Noise</figcaption>
+			</figure>
+		</div>
+		<footer>Footer</footer>
+	</body>
+</html>

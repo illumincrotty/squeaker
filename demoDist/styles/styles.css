@@ -1,6 +1,16 @@
-@import url('https://cdn.jsdelivr.net/npm/modern-normalize@1.1.0/modern-normalize.min.css');
-
 /* #region:Atkinson */
+/* regular
+@font-face {
+	font-family: 'Atkinson-Hyperlegible';
+	src: url('../fonts/atkinson/woff2/Atkinson-Hyperlegible-Regular-102a.woff2')
+			format('woff2'),
+		url('../fonts/atkinson/woff/Atkinson-Hyperlegible-Regular-102.woff')
+			format('woff');
+	font-weight: normal;
+	font-style: normal;
+	font-display: block;
+} */
+
 /* regular */
 @font-face {
 	font-family: 'Atkinson-Hyperlegible';
@@ -13,18 +23,18 @@
 	font-display: block;
 }
 
-/* bold */
+/* bold 
 @font-face {
 	font-family: 'Atkinson-Hyperlegible';
-	src: url('../fonts/atkinson/woff2/Atkinson-Hyperlegible-Bold-102a.woff2')
+	src: url('./fonts/atkinson/woff2/Atkinson-Hyperlegible-Bold-102a.woff2')
 			format('woff2'),
-		url('../fonts/atkinson/woff/Atkinson-Hyperlegible-Bold-102.woff')
+		url('../../public/fonts/atkinson/woff/Atkinson-Hyperlegible-Bold-102.woff')
 			format('woff');
 	font-weight: bold;
 	font-style: normal;
-}
+}*/
 
-/* italics */
+/* italics 
 @font-face {
 	font-family: 'Atkinson-Hyperlegible';
 	src: url('../fonts/atkinson/woff2/Atkinson-Hyperlegible-Italic-102a.woff2')
@@ -33,8 +43,8 @@
 			format('woff');
 	font-weight: normal;
 	font-style: italic;
-}
-/* bold italics */
+}*/
+/* bold italics 
 @font-face {
 	font-family: 'Atkinson-Hyperlegible';
 	src: url('../fonts/atkinson/woff2/Atkinson-Hyperlegible-BoldItalic-102a.woff2')
@@ -43,21 +53,18 @@
 			format('woff');
 	font-weight: bold;
 	font-style: italic;
-}
+}*/
 /* #endregion:Atkinson */
 
-/* #region:Panamera */
+/* #region:Panamera 
 @font-face {
 	font-family: 'Panamera';
-	src: url('../fonts/Panamera/woff2/Panamera-Light.woff2')
-			format('woff2'),
-		url('../fonts/Panamera/woff/Panamera-Light.woff')
-			format('woff');
+	src: url('../fonts/Panamera/woff2/Panamera-Light.woff2') format('woff2'),
+		url('../fonts/Panamera/woff/Panamera-Light.woff') format('woff');
 	font-weight: normal;
 	font-style: normal;
 	font-display: block;
-}
-
+}*/
 /* #endregion:Panamera */
 
 :root {
@@ -84,23 +91,19 @@
 	--textLight: var(--wLight);
 	--text: hsl(var(--textHue), var(--textSat), var(--textLight));
 
-	--shadow: hsla(
-		var(--textHue),
-		var(--textSat),
-		var(--textLight),
-		25%
-	);
+	--shadow: hsla(var(--textHue), var(--textSat), var(--textLight), 25%);
 	--primary: var(--dark-electric-blue);
 	--secondary: var(--light-coral);
 	--tertiary: var(--peach);
 
-	--noise: url(../images/egg-shell.png);
+	--font-ratio: 1.618;
+	--font-ratio-2: 1.2;
 
-	--font-ratio: 1.333;
+	--font-medium: calc(0.8rem + 0.5vmin);
 
 	--font-minimum-size: 15;
-	--font-minimum-size-pixels: calc(var(--font-minimum-size) * 1px);
 	--font-maximum-size: 21;
+	--font-minimum-size-pixels: calc(var(--font-minimum-size) * 1px);
 	--font-medium: calc(
 		var(--font-minimum-size-pixels) +
 			(var(--font-maximum-size) - var(--font-minimum-size)) *
@@ -108,16 +111,10 @@
 	);
 	--font-large: calc(var(--font-medium) * var(--font-ratio));
 	--font-extra-large: calc(var(--font-large) * var(--font-ratio));
-	--font-extra-extra-large: calc(
-		var(--font-large) * var(--font-ratio)
-	);
+	--font-extra-extra-large: calc(var(--font-large) * var(--font-ratio));
 
-	--font-small: calc(
-		var(--font-medium) / var(--font-inverse-ratio)
-	);
-	--font-extra-small: calc(
-		var(--font-small) / var(--font-inverse-ratio)
-	);
+	--font-small: calc(var(--font-medium) / var(--font-ratio-2));
+	--font-extra-small: calc(var(--font-small) / var(--font-ratio-2));
 }
 
 @media (prefers-color-scheme: light) {
@@ -131,40 +128,33 @@
 	}
 }
 
-.stack,
-.small-stack {
+.stack {
 	margin-left: auto;
 	margin-right: auto;
 }
-.stack > * + * {
-	margin-top: 2rem;
-}
-
-.small-stack > * + * {
-	margin-top: 1rem;
-	margin-left: auto;
-	margin-right: auto;
+.stack > * {
+	margin-top: var(--gap, 2.25rem);
+	padding-left: 1.25rem;
+	padding-right: 1.25rem;
 }
 
 body {
 	color: var(--text);
-	background: var(--noise), var(--bg);
+	background: var(--bg);
 	display: grid;
 	grid-template-columns:
-		minmax(2ch, 1fr) minmax(200px, 66rem)
-		minmax(2ch, 1fr);
+		minmax(1rem, 1fr) minmax(200px, 66rem)
+		minmax(1rem, 1fr);
 	grid-template-rows: min-content 1fr min-content;
 	grid-template-areas:
 		'lHeader header rHeader'
 		'leftSidebar main rightSidebar'
 		'footer footer footer';
 
-	gap: 0 1rem;
-	height: 100%;
+	height: 100vh;
 	width: 100%;
 	padding: 0;
 	margin: 0;
-	row-gap: 3rem;
 	line-height: 1.8;
 	overflow-wrap: break-word;
 	word-wrap: break-word;
@@ -172,52 +162,51 @@ body {
 	font-family: Atkinson-Hyperlegible;
 	font-size: var(--font-medium);
 }
+h1 {
+	font-size: var(--font-extra-extra-large);
+	text-align: center;
+	margin: 0;
+}
+
 header {
 	grid-area: header;
 	height: min-content;
-	/* align-items: center; */
 	text-align: center;
 	padding-left: 0.5rem;
 	padding-right: 0.5rem;
 	width: 100%;
-	/* width: min-content; */
-	box-shadow: 0rem 0rem 0.25rem 0.25rem var(--shadow);
-	margin-block-start: 2rem;
-	font-family: 'Panamera';
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+	font-size: var(--font-extra-extra-large);
+	/* border-left: 0.2rem solid var(--text); */
+	/* border-top: 0.2ch solid var(--text); */
+	/* border-bottom: 0.2rem solid var(--text); */
+	/* box-shadow: 0rem 0rem 0.25rem 0.25rem var(--shadow); */
+	/* margin-block-start: 2rem; */
+	/* font-family: 'Panamera'; */
 	/* margin-top: ; */
 }
-
-h1 {
-	/* width: 100%; */
-	font-size: var(--font-extra-extra-large);
-	text-align: center;
-}
-header > h5 {
+header > h2 {
 	font-size: var(--font-small);
+	font-style: normal;
+	font-weight: normal;
+	margin: 0;
 }
 
 #content {
 	grid-area: main;
 	font-family: 'Atkinson-Hyperlegible';
 	width: 100%;
+	border-top: 0.1rem solid var(--text);
+	border-left: 0.1rem solid var(--text);
 }
-#content > * {
-	margin-left: auto;
-	margin-right: auto;
-}
-.chartContainer {
-	position: relative;
-}
-.chartSquare {
-	width: min(max(100%, 5rem), 23rem);
-	height: fit-content;
-}
-.chartWide {
-	height: fit-content;
-	/* width: min(max(100%, 5rem), 23rem); */
-}
+
 footer {
 	grid-area: footer;
 	text-align: center;
 	margin: auto;
+	padding-top: 2.25rem;
+	padding-bottom: 2.25rem;
+
+	font-size: var(--font-medium);
 }
