@@ -1,9 +1,10 @@
 import test from 'ava';
-import { interpolationQuintic, interpolate } from '../src/interpolation';
 import {
-	interpolationLinear,
+	interpolationQuintic,
+	interpolate,
 	interpolationHermite,
-} from '../src/interpolation';
+	interpolationLinear,
+} from '../src/squeaker';
 
 const range0to10 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 

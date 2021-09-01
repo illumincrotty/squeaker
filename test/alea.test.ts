@@ -1,6 +1,6 @@
 import test from 'ava';
-import { aleaFactory } from '../src/randomFunctions';
-import { range } from '../src/util';
+import { aleaFactory, rangeGenerator } from '../src/squeaker';
+// import { range, rangeGenerator } from '../src/util';
 
 test('Alea Factory type tests', (t) => {
 	const alea = aleaFactory();
@@ -51,6 +51,8 @@ test('State Tests', (t) => {
 
 test('many input values', (t) => {
 	const alea = aleaFactory();
-	range(0, 1000).map(() => aleaFactory(alea.uint32().toString()));
+	[...rangeGenerator({ start: 0, end: 1000 })].map(() =>
+		aleaFactory(alea.uint32().toString())
+	);
 	t.pass();
 });

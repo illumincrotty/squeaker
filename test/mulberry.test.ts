@@ -3,8 +3,8 @@ import test from 'ava';
 import {
 	mulberryFactory,
 	functionalMulberryFactory,
-} from '../src/randomFunctions';
-import { range } from '../src/util';
+	rangeGenerator,
+} from '../src/squeaker';
 
 test('Mulberry returns number', (t) => {
 	const mulberry = mulberryFactory(0);
@@ -20,7 +20,9 @@ test('Mulberry is repeatable', (t) => {
 
 test('Between 0 and 1', (t) => {
 	const mulberry = mulberryFactory(928_334);
-	const oneKRandomNumbers = range(0, 1000).map(mulberry);
+	const oneKRandomNumbers = [...rangeGenerator({ start: 0, end: 1000 })].map(
+		mulberry
+	);
 
 	t.true(oneKRandomNumbers.every((number) => number >= 0));
 	t.true(oneKRandomNumbers.every((number) => number < 1));

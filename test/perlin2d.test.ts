@@ -1,8 +1,11 @@
 import test from 'ava';
 
-import { perlinNoise2dFactory } from '../src/squeaker';
-import { flatGridGenerator, rangeGenerator } from '../src/util';
-import { aleaFactory } from '../src/random/alea';
+import {
+	aleaFactory,
+	flatGridGenerator,
+	perlinNoise2dFactory,
+	rangeGenerator,
+} from '../src/squeaker';
 
 const _testing = (_parameter: {
 	xSize: number;
@@ -18,8 +21,8 @@ const _testing = (_parameter: {
 ] => {
 	const perlin2d = perlinNoise2dFactory({
 		// seed: 1_092_378,
-		domain: _parameter.xSize,
-		range: _parameter.ySize,
+		xSize: _parameter.xSize,
+		ySize: _parameter.ySize,
 	});
 
 	const noiseGen = flatGridGenerator(
@@ -46,7 +49,7 @@ const _testing = (_parameter: {
 		accumulator += noiseData.value;
 		min = Math.min(min, noiseData.value);
 		max = Math.max(max, noiseData.value);
-		tenths[Math.trunc(noiseData.value * 10)] += 1;
+		tenths[Math.floor(noiseData.value * 10)] += 1;
 		noiseData = noiseGen.next();
 	}
 
@@ -68,17 +71,24 @@ const _testing = (_parameter: {
 	return [min, max, count, accumulator, tenths];
 };
 const _bigTestparameters = {
-	xSize: 1000,
-	ySize: 1000,
-	xDiv: 10_000,
-	yDiv: 10_000,
+	xSize: 100,
+	ySize: 100,
+	xDiv: 1000,
+	yDiv: 1000,
 };
+
 const _smallTestparameters = {
 	xSize: 10,
 	ySize: 10,
 	xDiv: 100,
 	yDiv: 100,
 };
+
+const data = (() => {
+	const closuredData = _testing(_bigTestparameters);
+	return () => closuredData;
+})();
+
 // _testing();
 
 test('Basic 2d test', (t) => {
@@ -117,18 +127,32 @@ test('perlin 2d is pseduo-random/seedable', (t) => {
 test('Respects ranges', (t) => {
 	const noise = perlinNoise2dFactory({
 		seed: 71_238,
-		domain: 10,
-		range: 10,
+		xSize: 10,
+		ySize: 10,
 	});
 
-	t.is(noise(0.2, 0.2), noise(10.2, 10.2));
+	t.is(
+		noise(0.286, 0.286).toPrecision(15),
+		noise(10.286, 10.286).toPrecision(15),
+		'specific case'
+	);
+
+	const random = aleaFactory().random,
+		randX = random() * 10,
+		randY = random() * 10;
+
+	t.is(
+		noise(randX, randY).toPrecision(15),
+		noise(10 + randX, 10 + randY).toPrecision(15),
+		'random case'
+	);
 });
 
 test('works in the negative', (t) => {
 	const noise = perlinNoise2dFactory({
 		seed: 71_238,
-		domain: 10,
-		range: 10,
+		xSize: 10,
+		ySize: 10,
 	});
 
 	t.true(typeof noise(-0.2, -0.2) === 'number');
@@ -137,9 +161,46 @@ test('works in the negative', (t) => {
 test('respects range in the negative', (t) => {
 	const noise = perlinNoise2dFactory({
 		seed: 71_238,
-		domain: 10,
-		range: 10,
+		xSize: 10,
+		ySize: 10,
 	});
 
-	t.is(noise(-0.2, -0.2), noise(10 - 0.2, 10 - 0.2));
+	t.is(
+		noise(-0.2, -0.2).toPrecision(10),
+		noise(10 - 0.2, 10 - 0.2).toPrecision(10),
+		'specific case'
+	);
+
+	const random = aleaFactory().random,
+		randX = -random() * 10,
+		randY = -random() * 10;
+
+	t.is(
+		noise(randX, randY).toPrecision(15),
+		noise(10 + randX, 10 + randY).toPrecision(15),
+		'random case'
+	);
+});
+
+test('Average value approximately .5', (t) => {
+	const [_a, _b, count, accumulator, _c] = data();
+
+	t.is((accumulator / count).toPrecision(1), '0.5');
+});
+
+test('returns values in range [0,1]', (t) => {
+	const [_min, _max, _count, _accumulator, _tenths] = data();
+
+	t.is(Math.max(1, _max), 1);
+	t.is(Math.min(0, _min), 0);
+});
+
+test('creates bell curve distribution', (t) => {
+	const [_a, _b, _count, _accumulator, _tenths] = data();
+	const distribution = [0, 2, 8, 16, 23, 23, 16, 8, 2, 0];
+	const set = _tenths.map(
+		(input, index) => distribution[index] - (input / _count) * 100
+	);
+
+	t.true(set.every((input) => Math.abs(input) <= 1));
 });

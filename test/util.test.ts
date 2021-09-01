@@ -4,8 +4,8 @@ import {
 	flatGridGenerator,
 	range,
 	rangeGenerator,
-	dotProduct,
-} from '../src/util';
+	dotProduct2d,
+} from '../src/squeaker';
 
 test('includes minimum excludes maximum', (t) => {
 	const testing = range(0, 1);
@@ -136,13 +136,13 @@ test('flatGrid big test', (t) => {
 const oneZero = { x: 1, y: 0 },
 	negativeOneZero = { x: -1, y: 0 };
 test('dot product postive positive', (t) => {
-	t.is(dotProduct(oneZero, oneZero), 1);
+	t.is(dotProduct2d(oneZero, oneZero), 1);
 });
 
 test('dot product postive negative', (t) => {
-	t.is(dotProduct(oneZero, negativeOneZero), -1);
+	t.is(dotProduct2d(oneZero, negativeOneZero), -1);
 });
 
 test('dot product partial', (t) => {
-	t.is(dotProduct(oneZero, { x: 0.25, y: 0.25 }), 0.25);
+	t.is(dotProduct2d(oneZero, { x: 0.25, y: 0.25 }), 0.25);
 });
