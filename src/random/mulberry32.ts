@@ -7,7 +7,9 @@ const _magicNumberAdd = 1_831_565_813;
 /**
  * functionalRandom.
  */
-type functionalRandom = () => [number, functionalRandom];
+interface functionalRandom {
+	(): [number, functionalRandom];
+}
 /**
  * functionalRandomBuilder.
  *

@@ -1,4 +1,4 @@
-export type interpolationFunction = (t: number) => number;
+import type { interpolationFunction } from './noiseTypes';
 
 /**
  * General Interpolation
@@ -17,6 +17,38 @@ export const interpolate = (
 ): number => {
 	const value = interpolateFunction(mid);
 	return start * (1 - value) + end * value;
+};
+
+/**
+ * Linear Interpolation
+ *
+ * @param start - start value (integer)
+ * @param end - end value (integer)
+ * @param mid - a value in domain [0,1]
+ * @returns a number between start and end
+ */
+export const interpolateLinear = (
+	start: number,
+	end: number,
+	mid: number
+): number => {
+	return start * (1 - mid) + end * mid;
+};
+
+/**
+ * Async linear Interpolation
+ *
+ * @param start - start value (integer)
+ * @param end - end value (integer)
+ * @param mid - a value in domain [0,1]
+ * @returns a number between start and end
+ */
+export const interpolateAsync = async (
+	start: Promise<number>,
+	end: Promise<number>,
+	mid: number
+): Promise<number> => {
+	return Promise.resolve((await start) * (1 - mid) + (await end) * mid);
 };
 
 /**
@@ -48,16 +80,5 @@ export const interpolationHermite: interpolationFunction = (
  * @returns a value between 0 and 1
  * @example
  */
-export const interpolationQuintic: interpolationFunction = (
-	t: number
-): number => t ** 3 * (10 + t * (-15 + t * 6));
-
-// export const bilinearInterpolation = (
-// 	zeroZero: vector2d,
-// 	zeroOne: vector2d,
-// 	oneZero: vector2d,
-// 	oneOne: vector2d,
-// 	postition: vector2d
-// ) => {
-// 	return 1;
-// };
+export const interpolationQuintic: interpolationFunction = (t: number) =>
+	t * t * t * (10 + t * (-15 + t * 6));

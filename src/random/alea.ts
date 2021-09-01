@@ -3,16 +3,20 @@
 // -----------------------------------------------------
 
 const _mashMagicNumber = 0.025_196_032_824_169_38;
-const _fractionalMagicnumber = 1.110_223_024_625_156_5e-16;
+const _fractionalFix = Number.EPSILON / 2;
 
 /**
  * Equivalent to 2^32
+ *
+ * @private
  */
 const _twoPow32 = 0x1_00_00_00_00;
 /**
  * Equivalent to 2^-32
+ *
+ * @private
  */
-const _twoPowNegative32 = 2.328_306_436_538_696_3e-10;
+const _twoPowNegative32 = 2 ** -32;
 
 /**
  * Mash factory
@@ -46,19 +50,19 @@ const _aleaMash = () => {
  *
  * the three 32 bit seeds of alea and a dynamic integration constant
  */
-type aleaState = {
+interface aleaState {
 	seed0: number;
 	seed1: number;
 	seed2: number;
 	constant: number;
-};
+}
 
 /**
  * aleaType
  *
- * The necessary alea functions
+ * The required functions of an alea implementation
  */
-export type aleaType = {
+export interface aleaType {
 	/**
 	 * @returns a 32 bit number between `[0,1)` like Math.random
 	 */
@@ -79,7 +83,7 @@ export type aleaType = {
 	 * @param state - the new state to change the prng to
 	 */
 	importState(state: aleaState): void;
-};
+}
 
 /**
  * aleaFactory
@@ -92,43 +96,49 @@ export type aleaType = {
 export const aleaFactory = (seed = `${Date.now()}`): aleaType => {
 	const _mash = _aleaMash();
 
-	const _state: aleaState = {
-		seed0: _mash(' '),
-		seed1: _mash(' '),
-		seed2: _mash(' '),
-		constant: 1,
-	};
+	const _state = [_mash(' '), _mash(' '), _mash(' '), 1];
 
-	_state.seed0 -= _mash(seed);
-	if (_state.seed0 < 0) _state.seed0 += 1;
+	_state[0] -= _mash(seed);
+	if (_state[0] < 0) _state[0] += 1;
 
-	_state.seed1 -= _mash(seed);
-	if (_state.seed1 < 0) _state.seed1 += 1;
+	_state[1] -= _mash(seed);
+	if (_state[1] < 0) _state[1] += 1;
 
-	_state.seed2 -= _mash(seed);
-	if (_state.seed2 < 0) _state.seed2 += 1;
+	_state[2] -= _mash(seed);
+	if (_state[2] < 0) _state[2] += 1;
 
-	const aleaObject: aleaType = {
+	const aleaObject = {
 		random: () => {
 			const _temporary =
-				2_091_639 * _state.seed0 + _state.constant * _twoPowNegative32;
-			_state.seed0 = _state.seed1;
-			_state.seed1 = _state.seed2;
-			return (_state.seed2 =
-				_temporary - (_state.constant = Math.trunc(_temporary)));
+				2_091_639 * _state[0] + _state[3] * _twoPowNegative32;
+			_state[0] = _state[1];
+			_state[1] = _state[2];
+			return (_state[2] =
+				_temporary - (_state[3] = Math.floor(_temporary)));
 		},
 		uint32: () => aleaObject.random() * _twoPow32,
 		fract53: () => {
 			return (
 				aleaObject.random() +
-				Math.trunc(aleaObject.random() * 0x20_00_00) *
-					_fractionalMagicnumber
+				Math.trunc(aleaObject.random() * 0x20_00_00) * _fractionalFix
 			);
 		},
-		exportState: (): aleaState => ({ ..._state }),
+		exportState: (): aleaState => ({
+			seed0: _state[0],
+			seed1: _state[1],
+			seed2: _state[2],
+			constant: _state[3],
+		}),
 		importState: (inputState: aleaState): void => {
-			Object.assign(_state, inputState);
+			[_state[0], _state[1], _state[2], _state[3]] = [
+				inputState.seed0,
+				inputState.seed1,
+				inputState.seed2,
+				inputState.constant,
+			];
 		},
 	};
 	return aleaObject;
 };
+
+export const alea = aleaFactory('Best Of luck!').random;
