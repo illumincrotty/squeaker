@@ -127,4 +127,5 @@ dist
 # Local History for Visual Studio Code
 .history/
 
-
+# benchmarking area
+benchmarkDirectory
