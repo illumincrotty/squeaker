@@ -1,12 +1,7 @@
 import { interpolate } from '../interpolation';
 import type { noiseFunction3d, vectorArray3d } from '../noiseTypes';
 import { aleaFactory } from '../random/alea';
-import {
-	altHash,
-	consistentModulus,
-	dotProduct3d,
-	rangeGenerator,
-} from '../util';
+import { altHash, consistentModulus, dotProduct3d } from '../util';
 import {
 	gradients3DArray,
 	maxFix,
@@ -14,7 +9,70 @@ import {
 } from './perlinConstants';
 import type { perlinNoiseOptions3d } from './perlinTypes';
 
-const permGenerator = (
+const _lightPermutationsGenerator = (
+	x: number,
+	y: number,
+	z: number
+): ((x: number, y: number, z: number) => vectorArray3d) => {
+	const _xperms = new Uint32Array(x + 1).map(
+		(_, _index) => altHash(_index * 17 + 0xeb_c9) & 0xf_ff_ff
+	);
+	_xperms[_xperms.length - 1] = _xperms[0];
+
+	const _yperms = new Uint32Array(y + 1).map(
+		(_, _index) => altHash(_index * 31 + 0x1e_c1) & 0xf_ff_ff
+	);
+	_yperms[_yperms.length - 1] = _yperms[0];
+
+	const _zperms = new Uint32Array(z).map(
+		(_, _index) => altHash(_index * 571 + 0xaf_1c_ab_62) & 0xf_ff_ff
+	);
+	_zperms[_zperms.length - 1] = _zperms[0];
+
+	return (x: number, y: number, z: number) =>
+		gradients3DArray[
+			// hash(_xperms[x] + _yperms[y] + _zperms[z]) % // works but is slow
+			// mix(_xperms[x], _yperms[y], _zperms[z]) % // also works, also slow
+			// (_xperms[x] ^ _yperms[y] ^ _zperms[z]) % // pretty fast but causes distinct visual artificts
+			// ((_xperms[x] >> (y & 0xf)) ^ (_yperms[y] >> (z & 8)) ^ (_zperms[z] >> (x & 0xf)))  // doesn't loop but does work
+
+			// prettier-ignore
+			((_xperms[x] >> (_yperms[y] & 0x8)) ^
+			 (_yperms[y] >> (_zperms[z] & 0x8)) ^
+			 (_zperms[z] >> (_xperms[x] & 0x8)))
+			% gradients3DArray.length
+		];
+};
+
+const _appendFirst = <Type>(input: Type[]): Type[] => [...input, input[0]];
+
+const _heavyPermutationsGenerator = (
+	x: number,
+	y: number,
+	z: number,
+	rand: () => number
+): ((x: number, y: number, z: number) => vectorArray3d) => {
+	const _special = _appendFirst(
+		Array.from({ length: x }).map(() =>
+			_appendFirst(
+				Array.from({ length: y }).map(() =>
+					_appendFirst(
+						Array.from({ length: z }).map(() => {
+							// fill with gradients
+							return gradients3DArray[
+								Math.trunc(rand() * gradients3DArray.length)
+							];
+						})
+					)
+				)
+			)
+		)
+	);
+
+	return (x: number, y: number, z: number) => _special[x][y][z];
+};
+
+const _permGenerator = (
 	x: number,
 	y: number,
 	z: number,
@@ -23,96 +81,15 @@ const permGenerator = (
 	forceHigh = false
 ) => {
 	if (!forceHigh && (forceLow || x * y * z > 256 ** 3)) {
-		return (() => {
-			// too big to pregenerate
-			// faster startup (for the size) but slower runtime (about half as fast)
-			// space needed is O(x+y+z)
-			const _xperms = (() => {
-				const _array = new Uint32Array(x + 1).map(
-					(_, _index) => altHash(_index * 17 + 0xeb_c9) & 0xf_ff_ff
-				);
-				_array[x] = _array[0];
-
-				return _array;
-			})();
-
-			const _yperms = (() => {
-				const _array = new Uint32Array(y + 1).map(
-					(_, _index) => altHash(_index * 31 + 0x1e_c1) & 0xf_ff_ff
-				);
-				_array[y] = _array[0];
-
-				return _array;
-			})();
-
-			const _zperms = (() => {
-				const _array = new Uint32Array(z + 1).map(
-					(_, _index) =>
-						altHash(_index * 31 + 0xaf_1c_ab_62) & 0xf_ff_ff
-				);
-				_array[z] = _array[0];
-
-				return _array;
-			})();
-
-			return (x: number, y: number, z: number) =>
-				gradients3DArray[
-					// hash(_xperms[x] + _yperms[y] + _zperms[z]) % // works but is slow
-					// mix(_xperms[x], _yperms[y], _zperms[z]) % // also works, also slow
-					// (_xperms[x] ^ _yperms[y] ^ _zperms[z]) % // pretty fast but causes distinct visual artificts
-
-					// prettier-ignore
-					// ((_xperms[x] >> (y & 0xf)) ^ (_yperms[y] >> (z & 8)) ^ (_zperms[z] >> (x & 0xf)))  // doesn't loop but does work
-					((_xperms[x] >> (_yperms[y] & 0x8)) +
-					 (_yperms[y] >> (_zperms[z] & 0x8)) ^
-					 (_zperms[z] >> (_xperms[x] & 0x8)))
-					// (((_yperms[y] & 0xFFF) >> (_xperms[x] & 0x8)) ^ ((_xperms[x]& 0xFFF )>> (_yperms[y] & 0x8)))
-					% gradients3DArray.length
-				];
-		})();
+		// too big to pregenerate
+		// faster startup (for the size) but slower runtime (about half as fast)
+		// space needed is O(x+y+z)
+		return _lightPermutationsGenerator(x, y, z);
 	}
-	return (() => {
-		// small enough to pregenerate
-		// slower startup (for the same size) but much faster runtime (about twice as fast)
-		// space needed is O(x*y*z)
-		const _permutationArray: vectorArray3d[][][] = (() => {
-			// create outer array of size x
-			const _xArrays = [
-				...rangeGenerator({
-					start: 0,
-					end: x,
-				}),
-			]
-				.map(() => {
-					// create 2nd dimension of array, size y
-					return [
-						...rangeGenerator({
-							start: 0,
-							end: y,
-						}),
-					]
-						.map(() => {
-							return [
-								...rangeGenerator({
-									// create 3rd dimension of array, size z
-									start: 0,
-									end: z,
-								}),
-							].map(() => {
-								// fill with gradients
-								return gradients3DArray[
-									Math.trunc(rand() * gradients3DArray.length)
-								];
-							});
-						})
-						.map((zArrays) => [...zArrays, zArrays[0]]); // space for z overflow by 1
-				})
-				.map((yArray) => [...yArray, yArray[0]]); // space for y overflow by 1
-			return [..._xArrays, _xArrays[0]]; //space for x overflow by 1
-		})();
-
-		return (x: number, y: number, z: number) => _permutationArray[x][y][z];
-	})();
+	// small enough to pregenerate
+	// slower startup (for the same size) but much faster runtime (about twice as fast)
+	// space needed is O(x*y*z)
+	return _heavyPermutationsGenerator(x, y, z, rand);
 };
 
 export const perlinNoise3dFactory = (
@@ -133,7 +110,7 @@ export const perlinNoise3dFactory = (
 		);
 	}
 
-	const _perms = permGenerator(
+	const _perms = _permGenerator(
 		_options.xSize,
 		_options.ySize,
 		_options.zSize,
@@ -206,12 +183,11 @@ export const perlinNoise3dFactory = (
 	};
 };
 
-export const perlin3d = perlinNoise3dFactory();
-
 export const perlinNoise3dFactoryLight = (
 	options?: perlinNoiseOptions3d
 ): noiseFunction3d =>
 	perlinNoise3dFactory({ _forceLowMemoryMode: true, ...options });
+
 export const perlinNoise3dFactoryHeavy = (
 	options?: perlinNoiseOptions3d
 ): noiseFunction3d =>
