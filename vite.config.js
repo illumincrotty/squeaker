@@ -19,8 +19,9 @@ const config = (environment) => {
 		css: {
 			modules: false,
 		},
+		base: '/squeaker/',
 		build: {
-			outDir: 'demoDist',
+			outDir: 'docs',
 		},
 	};
 
