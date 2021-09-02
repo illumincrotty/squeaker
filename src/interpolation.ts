@@ -20,38 +20,6 @@ export const interpolate = (
 };
 
 /**
- * Linear Interpolation
- *
- * @param start - start value (integer)
- * @param end - end value (integer)
- * @param mid - a value in domain [0,1]
- * @returns a number between start and end
- */
-export const interpolateLinear = (
-	start: number,
-	end: number,
-	mid: number
-): number => {
-	return start * (1 - mid) + end * mid;
-};
-
-/**
- * Async linear Interpolation
- *
- * @param start - start value (integer)
- * @param end - end value (integer)
- * @param mid - a value in domain [0,1]
- * @returns a number between start and end
- */
-export const interpolateAsync = async (
-	start: Promise<number>,
-	end: Promise<number>,
-	mid: number
-): Promise<number> => {
-	return Promise.resolve((await start) * (1 - mid) + (await end) * mid);
-};
-
-/**
  * linearInterpolation.
  *
  * @param t - a value in domain `[0,1]`
