@@ -4,7 +4,6 @@ export {
 	perlinNoise3dFactory,
 	perlinNoise3dFactoryLight,
 	perlinNoise3dFactoryHeavy,
-	perlin3d,
 } from './perlin3d';
 
 export type {
