@@ -92,35 +92,22 @@ test('Force High', (t) => {
 		0.5
 	);
 });
-
-test.serial('heavy is faster than light', (t) => {
-	const light = perlinNoise3dFactoryLight({
-		xSize: 200,
-		ySize: 200,
-		zSize: 200,
-		random: aleaFactory('97gikbv').random,
-	});
-
+test('Heavy works', (t) => {
 	const heavy = perlinNoise3dFactoryHeavy({
 		xSize: 200,
 		ySize: 200,
 		zSize: 200,
 		random: aleaFactory('97gikbv').random,
 	});
-	const loops = 1_000_000;
-	const preLight = performance.now();
-	for (let index = 0; index < loops; index++) {
-		light(0.5, 0.5, 0.5);
-	}
-	const postLight = performance.now();
+	t.is(heavy(0, 0, 0), 0.5);
+});
 
-	const preHeavy = performance.now();
-	for (let index = 0; index < loops; index++) {
-		heavy(0.5, 0.5, 0.5);
-	}
-	const postHeavy = performance.now();
-	t.true(
-		postLight - preLight > postHeavy - preHeavy,
-		'light takes longer to run than heavy'
-	);
+test('light works', (t) => {
+	const light = perlinNoise3dFactoryLight({
+		xSize: 200,
+		ySize: 200,
+		zSize: 200,
+		random: aleaFactory('97gikbv').random,
+	});
+	t.is(light(0, 0, 0), 0.5);
 });
