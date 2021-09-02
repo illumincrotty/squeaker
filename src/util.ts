@@ -121,26 +121,6 @@ export const dotProduct3d = (
 };
 
 /**
- * Takes the dot product of two vectors
- *
- * ___order does not matter___
- *
- * @param vectorA - a given 2D vector
- * @param vectorB - a given 2D vector
- * @returns scalar value
- */
-export const dotProduct3dAsync = async (
-	vectorA: [x: number, y: number, z: number],
-	vectorB: [x: number, y: number, z: number]
-): Promise<number> => {
-	return Promise.resolve(
-		vectorA[0] * vectorB[0] +
-			vectorA[1] * vectorB[1] +
-			vectorA[2] * vectorB[2]
-	);
-};
-
-/**
  * Implementation of Durstenfeld's version of the Fisher–Yates shuffle algorithm
  *
  * Shuffles an array in O(n) time, NOT an inplace shuffle
@@ -164,6 +144,7 @@ export const shuffle = <type>(
 
 	return _shuffledArray;
 };
+
 /**
  * A fast hash function
  *
@@ -181,7 +162,7 @@ export const hash = (a: number): number => {
 };
 
 /**
- * A fast hash function
+ * A fast hash function, different than the first
  *
  * @param a - input number
  * @returns a hashed version of that number (32-bit only)
@@ -194,33 +175,33 @@ export const altHash = (a: number): number => {
 	return a;
 };
 
-export const mix = (a: number, b: number, c: number) => {
-	a -= b;
-	a -= c;
-	a ^= c >> 13;
-	b -= c;
-	b -= a;
-	b ^= a << 8;
-	c -= a;
-	c -= b;
-	c ^= b >> 13;
-	a -= b;
-	a -= c;
-	a ^= c >> 12;
-	b -= c;
-	b -= a;
-	b ^= a << 16;
-	c -= a;
-	c -= b;
-	c ^= b >> 5;
-	a -= b;
-	a -= c;
-	a ^= c >> 3;
-	b -= c;
-	b -= a;
-	b ^= a << 10;
-	c -= a;
-	c -= b;
-	c ^= b >> 15;
-	return c & 0xff_ff;
-};
+// export const mix = (a: number, b: number, c: number) => {
+// 	a -= b;
+// 	a -= c;
+// 	a ^= c >> 13;
+// 	b -= c;
+// 	b -= a;
+// 	b ^= a << 8;
+// 	c -= a;
+// 	c -= b;
+// 	c ^= b >> 13;
+// 	a -= b;
+// 	a -= c;
+// 	a ^= c >> 12;
+// 	b -= c;
+// 	b -= a;
+// 	b ^= a << 16;
+// 	c -= a;
+// 	c -= b;
+// 	c ^= b >> 5;
+// 	a -= b;
+// 	a -= c;
+// 	a ^= c >> 3;
+// 	b -= c;
+// 	b -= a;
+// 	b ^= a << 10;
+// 	c -= a;
+// 	c -= b;
+// 	c ^= b >> 15;
+// 	return c & 0xff_ff;
+// };
