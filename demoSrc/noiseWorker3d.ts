@@ -76,10 +76,10 @@ const update = (frame: number): ImageData => {
 
 	const colorArray = new Uint8ClampedArray(4 * width * height);
 
-	for (let x = 0; x < width; x += 1) {
-		for (let y = 0; y < height; y += 1) {
+	for (let x = 0; x < width; x += 4) {
+		for (let y = 0; y < height; y += 4) {
 			const color = Math.floor(rand(x / 25, y / 25, frame / 100) * 255);
-			rect(x, y, 1, 1, color, colorArray);
+			rect(x, y, 4, 4, color, colorArray);
 		}
 	}
 

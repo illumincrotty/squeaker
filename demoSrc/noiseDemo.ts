@@ -1,23 +1,47 @@
 import NoiseWorker from './noiseWorker3d?worker&inline';
 import NoiseWorker2d from './noiseWorker2d?worker&inline';
+import '../assets/styles/styles.css';
+import '../assets/styles/noiseDemo.css';
 
 const createWorker = (
 	canvas: HTMLCanvasElement,
 	constructorMessage: messageData['constructor']
 ) => {
 	const worker = new NoiseWorker();
+	const context = canvas.getContext('2d');
+	if (context) {
+		const imageQueue: ImageData[] = [];
+		const setup = async () => {
+			context.fillStyle = 'grey';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			const append = async (pic: ImageData) =>
+				Promise.resolve(imageQueue.push(pic));
 
-	worker.addEventListener('message', (message) => {
-		canvas.getContext('2d')?.putImageData(message.data as ImageData, 0, 0);
-	});
+			worker.addEventListener('message', (message) => {
+				void append(message.data);
+			});
 
-	worker.postMessage({
-		constructor: constructorMessage,
-	} as messageData);
-	worker.postMessage({
-		update: { frame: 0 },
-	} as messageData);
-	return worker;
+			worker.postMessage({
+				constructor: constructorMessage,
+			} as messageData);
+			return Promise.resolve();
+		};
+
+		void setup();
+
+		return (frame: number) => {
+			worker.postMessage({
+				update: { frame: frame },
+			} as messageData);
+			if (imageQueue.length > 1)
+				context.putImageData(imageQueue.shift() as ImageData, 0, 0);
+			// return Promise.resolve();
+		};
+	}
+
+	return () => {
+		console.log('invalid canvas context');
+	};
 };
 
 const scope = () => {
@@ -91,15 +115,18 @@ const scope = () => {
 
 	const update = () => {
 		frame += 1;
-		if (frame % 2 === 0) {
-			workerHeavy.postMessage({
-				update: { frame: frame },
-			} as messageData);
-		}
-		if ((frame + 1) % 2 === 0) {
-			workerLight.postMessage({
-				update: { frame: frame },
-			} as messageData);
+
+		switch (frame % 2) {
+			case 0: {
+				void workerHeavy(frame);
+				break;
+			}
+			case 1: {
+				void workerLight(frame);
+				break;
+			}
+			default:
+				break;
 		}
 
 		window.requestAnimationFrame(update);
