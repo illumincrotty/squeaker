@@ -38,7 +38,15 @@
 		"url": "https://github.com/illumincrotty/squeaker/issues"
 	},
 	"homepage": "https://github.com/illumincrotty/squeaker#readme",
-	"keywords": [],
+	"keywords": [
+		"types",
+		"noise",
+		"perlin",
+		"perlin noise",
+		"alea",
+		"random",
+		"simplex"
+	],
 	"devDependencies": {
 		"@snowpack/plugin-typescript": "^1.2.1",
 		"@types/node": "^16.7.10",
@@ -74,7 +82,8 @@
 		},
 		"nodeArguments": [
 			"--loader=ts-node/esm",
-			"--experimental-specifier-resolution=node"
+			"--experimental-specifier-resolution=node",
+			"--no-warnings=ExperimentalWarning"
 		]
 	}
 }
