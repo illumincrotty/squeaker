@@ -5,6 +5,9 @@ import {
 	range,
 	rangeGenerator,
 	dotProduct2d,
+	altHash,
+	hash,
+	shuffle,
 } from '../src/squeaker';
 
 test('includes minimum excludes maximum', (t) => {
@@ -145,4 +148,28 @@ test('dot product postive negative', (t) => {
 
 test('dot product partial', (t) => {
 	t.is(dotProduct2d(oneZero, { x: 0.25, y: 0.25 }), 0.25);
+});
+
+const hashData = [...rangeGenerator({ start: 0, end: 100_000 })].map((value) =>
+	hash(value)
+);
+const altHashData = [...rangeGenerator({ start: 0, end: 100_000 })].map(
+	(value) => altHash(value)
+);
+
+test('Hash Changes number to something else', (t) => {
+	t.true(hashData.every((value, index) => value !== index));
+});
+
+test('Alt Hash Changes number to something else', (t) => {
+	t.true(altHashData.every((value, index) => value !== index));
+});
+
+test('Shuffle randomizes array order', (t) => {
+	const numberSet = Array.from({ length: 1000 }).map((_, index) => index);
+	const shuffle1 = shuffle(numberSet),
+		shuffle2 = shuffle(shuffle1);
+	t.notDeepEqual(shuffle1, numberSet);
+	t.notDeepEqual(shuffle2, numberSet);
+	t.notDeepEqual(shuffle2, shuffle1);
 });
