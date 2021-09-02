@@ -5,9 +5,23 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 		<title>Noise Demo</title>
-
-		<link rel="stylesheet" href="/styles/styles.css" />
-		<link rel="stylesheet" href="/styles/noiseDemo.css" />
+		<!-- <link
+			rel="preload"
+			href="/styles/styles.css"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'"
+		/>
+		<noscript><link rel="stylesheet" href="/styles/styles.css" /></noscript> -->
+		<!-- <link rel="stylesheet" href="/styles/noiseDemo.css" defer /> -->
+		<!-- <link
+			rel="preload"
+			href="/styles/noiseDemo.css"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'"
+		/>
+		<noscript
+			><link rel="stylesheet" href="/styles/noiseDemo.css"
+		/></noscript> -->
 		<!-- <link rel="stylesheet" href="/assets/css/print.css" media="print" /> -->
 
 		<meta
@@ -32,23 +46,33 @@
 		<link rel="canonical" href="replace_url" /> -->
 
 		<!-- TODO: add favicon -->
-		<link rel="icon" href="/favicon.ico" />
+		<link rel="icon" href="/favicon.ico" defer />
 		<!-- <link rel="icon" href="/favicon.svg" type="image/svg+xml" /> -->
 
 		<!-- TODO: add theme color -->
 		<!-- <meta name="theme-color" content="replace_theme_color" /> -->
 		<link
+			rel="preload"
+			href="https://cdn.jsdelivr.net/npm/modern-normalize@1.1.0/modern-normalize.min.css"
+			as="style"
+			onload="this.onload=null;this.rel='stylesheet'"
+		/>
+		<noscript
+			><link
+				rel="stylesheet"
+				href="https://cdn.jsdelivr.net/npm/modern-normalize@1.1.0/modern-normalize.min.css"
+		/></noscript>
+		<!-- <link
 			href="https://cdn.jsdelivr.net/npm/modern-normalize@1.1.0/modern-normalize.min.css"
 			rel="stylesheet"
-		/>
-		<script
-			type="module"
-			crossorigin
-			src="./assets/index.a948e687.js"
-		></script>
-	</head>
+			defer
+		/> -->
+	  <script type="module" crossorigin src="/assets/index.8e7f274f.js"></script>
+    <link rel="stylesheet" href="/assets/index.753ee8a3.css">
+  </head>
 
 	<body>
+		
 		<!-- <script src="/dist/index.js" type="module"></script> -->
 		<header>
 			<h1>Noise Demos</h1>
