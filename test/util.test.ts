@@ -8,7 +8,7 @@ import {
 	altHash,
 	hash,
 	shuffle,
-} from '../src/squeaker';
+} from '../src/util';
 
 test('includes minimum excludes maximum', (t) => {
 	const testing = range(0, 1);

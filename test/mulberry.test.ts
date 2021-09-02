@@ -3,8 +3,8 @@ import test from 'ava';
 import {
 	mulberryFactory,
 	functionalMulberryFactory,
-	rangeGenerator,
-} from '../src/squeaker';
+} from '../src/random/randomIndex';
+import { rangeGenerator } from '../src/util';
 
 test('Mulberry returns number', (t) => {
 	const mulberry = mulberryFactory(0);

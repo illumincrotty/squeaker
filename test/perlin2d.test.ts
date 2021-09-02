@@ -1,11 +1,8 @@
 import test from 'ava';
+import { aleaFactory } from '../src/random/randomIndex';
+import { perlinNoise2dFactory } from '../src/squeaker';
 
-import {
-	aleaFactory,
-	flatGridGenerator,
-	perlinNoise2dFactory,
-	rangeGenerator,
-} from '../src/squeaker';
+import { flatGridGenerator, rangeGenerator } from '../src/util';
 
 const _testing = (_parameter: {
 	xSize: number;

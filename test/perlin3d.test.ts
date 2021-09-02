@@ -1,6 +1,6 @@
 import test from 'ava';
+import { aleaFactory } from '../src/random/alea';
 import {
-	aleaFactory,
 	perlinNoise3dFactory,
 	perlinNoise3dFactoryHeavy,
 	perlinNoise3dFactoryLight,
