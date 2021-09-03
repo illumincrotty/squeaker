@@ -5,8 +5,7 @@ var __spreadArray =
 		if (pack || arguments.length === 2)
 			for (var i = 0, l = from.length, ar; i < l; i++) {
 				if (ar || !(i in from)) {
-					if (!ar)
-						ar = Array.prototype.slice.call(from, 0, i);
+					if (!ar) ar = Array.prototype.slice.call(from, 0, i);
 					ar[i] = from[i];
 				}
 			}
@@ -117,9 +116,7 @@ var internalFunctionDoc = function (input) {
 			),
 			input.params.map(function (parameter) {
 				return (
-					'@param ' +
-					parameter.name +
-					' - TODO describe parameter'
+					'@param ' + parameter.name + ' - TODO describe parameter'
 				);
 			}),
 			true

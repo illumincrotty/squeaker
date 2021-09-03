@@ -25,7 +25,7 @@
 		"test": "ava test/**/*.spec.ts test/**/*.test.ts",
 		"coverage": "c8 ava test/**/*.spec.ts test/**/*.test.ts --reporter=text",
 		"report": "c8 report --reporter=lcov --reporter=text",
-		"doc": "lehre --template-path ./template",
+		"doc": "lehre --template-path ./template.cjs -d src --write",
 		"benchmark": "pnpm node --loader=ts-node/esm --experimental-specifier-resolution=node --trace-warnings ./benchmarkDirectory/benchmark.ts"
 	},
 	"author": "Brian Crotty",
