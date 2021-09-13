@@ -4,13 +4,13 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<title>Noise Demo</title>
+		<title>Noise Generating Functions</title>
 
 		<meta
 			name="description"
 			content="visualizations of various noise types"
 		/>
-		<meta property="og:title" content="Noise Demo" />
+		<meta property="og:title" content="Noise Generating Functions" />
 		<meta
 			property="og:description"
 			content="visualizations of various noise types"
@@ -55,27 +55,101 @@
 	<body>
 		<script src="./demoSrc/noiseDemo.ts" type="module" defer></script>
 		<header>
-			<h1>Noise Demos</h1>
+			<h1>Noise Generating Functions</h1>
 			<h2>by Brian Crotty</h2>
 		</header>
 		<div class="stack" id="content" style="--gap: 1rem">
-			<figure>
-				<canvas width="500" height="500" id="perlin3d-default"></canvas>
-				<figcaption>2d slices of 3d Perlin Noise</figcaption>
-			</figure>
+			<section>
+				<section>
+					<h3>Gradient Noise (aka Perlin noise)</h3>
+					<figure>
+						<canvas
+							width="1000"
+							height="500"
+							id="perlin1d"
+						></canvas>
+						<figcaption>1D Perlin Noise</figcaption>
+					</figure>
+					<figure>
+						<canvas width="500" height="500" id="perlin2d"></canvas>
+						<figcaption>2D Perlin Noise</figcaption>
+					</figure>
+					<figure>
+						<canvas
+							width="500"
+							height="500"
+							id="perlin2dTile"
+						></canvas>
+						<figcaption>2D Perlin Noise Tiling</figcaption>
+					</figure>
+					<figure>
+						<canvas
+							width="500"
+							height="500"
+							id="perlin3dHeavy"
+						></canvas>
+						<figcaption>2D slices of 3d Perlin Noise</figcaption>
+					</figure>
 
-			<figure>
-				<canvas width="500" height="500" id="perlin3d-scale"></canvas>
-				<figcaption>
-					2d slices of 3d Perlin Noise w/ improved scaling
-				</figcaption>
-			</figure>
-
-			<figure>
-				<canvas width="500" height="500" id="perlin2d"></canvas>
-				<figcaption>2d Perlin Noise</figcaption>
-			</figure>
+					<figure>
+						<canvas
+							width="500"
+							height="500"
+							id="perlin3dLight"
+						></canvas>
+						<figcaption>
+							2D slices of 3D Perlin Noise w/ improved scaling
+						</figcaption>
+					</figure>
+				</section>
+				<section>
+					<h3>Value Noise</h3>
+					<figure>
+						<canvas width="1000" height="500" id="value1d"></canvas>
+						<figcaption>1D Value Noise</figcaption>
+					</figure>
+					<figure>
+						<canvas width="500" height="500" id="value2d"></canvas>
+						<figcaption>2D Value Noise</figcaption>
+					</figure>
+				</section>
+				<section>
+					<h3>Interpolation functions</h3>
+					<figure>
+						<canvas
+							width="500"
+							height="500"
+							id="interpolationLinear"
+						></canvas>
+						<figcaption>Linear Interpolation</figcaption>
+					</figure>
+					<figure>
+						<canvas
+							width="500"
+							height="500"
+							id="interpolationHermite"
+						></canvas>
+						<figcaption>Hermitic Interpolation</figcaption>
+					</figure>
+					<figure>
+						<canvas
+							width="500"
+							height="500"
+							id="interpolationQuintic"
+						></canvas>
+						<figcaption>Quintic Interpolation</figcaption>
+					</figure>
+					<figure>
+						<canvas
+							width="500"
+							height="500"
+							id="interpolationTrig"
+						></canvas>
+						<figcaption>Trigonometsric Interpolation</figcaption>
+					</figure>
+				</section>
+			</section>
 		</div>
-		<footer>Footer</footer>
+		<footer>WIP</footer>
 	</body>
 </html>
