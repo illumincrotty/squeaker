@@ -27,10 +27,18 @@ const _twoPowNegative32 = 2 ** -32;
  */
 const _aleaMash = () => {
 	let _state = 0xef_c8_24_9d;
-	const mash = (data: string) => {
-		data = data.toString();
-		for (var index = 0; index < data.length; index++) {
-			_state += data.charCodeAt(index);
+	/**
+	 * Mash
+	 *
+	 * hash used in alea
+	 *
+	 * @param input - a value to mash
+	 * @returns a hashed version of the input
+	 */
+	const mash = (input: Readonly<string>): number => {
+		input = input.toString();
+		for (var index = 0; index < input.length; index++) {
+			_state += input.charCodeAt(index);
 			var h = _mashMagicNumber * _state;
 			_state = h >>> 0;
 			h -= _state;
@@ -82,7 +90,7 @@ export interface aleaType {
 	 *
 	 * @param state - the new state to change the prng to
 	 */
-	importState(state: aleaState): void;
+	importState(state: Readonly<aleaState>): void;
 }
 
 /**
@@ -129,7 +137,7 @@ export const aleaFactory = (seed = `${Date.now()}`): aleaType => {
 			seed2: _state[2],
 			constant: _state[3],
 		}),
-		importState: (inputState: aleaState): void => {
+		importState: (inputState: Readonly<aleaState>): void => {
 			[_state[0], _state[1], _state[2], _state[3]] = [
 				inputState.seed0,
 				inputState.seed1,

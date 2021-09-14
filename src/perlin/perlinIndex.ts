@@ -1,10 +1,6 @@
-export { perlinNoise1dFactory, perlin1d } from './perlin1d';
-export { perlinNoise2dFactory, perlin2d } from './perlin2d';
-export {
-	perlinNoise3dFactory,
-	perlinNoise3dFactoryLight,
-	perlinNoise3dFactoryHeavy,
-} from './perlin3d';
+export { perlinNoise1dFactory } from './perlin1d';
+export { perlinNoise2dFactory } from './perlin2d';
+export { perlinNoise3dFactory } from './perlin3d';
 
 export type {
 	perlinNoiseOptions1d,
