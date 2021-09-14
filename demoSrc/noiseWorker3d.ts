@@ -1,11 +1,14 @@
 import type { noiseFunction3d } from '../src/noiseTypes';
 import type { perlinNoiseOptions3d } from '../src/squeaker';
 import {
-	perlinNoise3dFactory,
 	interpolationHermite,
 	interpolationLinear,
 	interpolationQuintic,
+	interpolationTrignonometric,
+	perlinNoise3dFactory,
 } from '../src/squeaker';
+import { rect } from './demoUtil';
+import type { interpolation, messageData } from './workerTypes';
 
 let noiseMachine: [width: number, height: number, rand: noiseFunction3d] = [
 	500,
@@ -13,10 +16,11 @@ let noiseMachine: [width: number, height: number, rand: noiseFunction3d] = [
 	(_x: number, _y: number, _z: number) => 0.5,
 ];
 
-const interpolationSwitch = (
-	_functionName: 'hermite' | 'linear' | 'quintic' | undefined
-) => {
+const interpolationSwitch = (_functionName: interpolation = 'hermite') => {
 	switch (_functionName) {
+		case 'trig': {
+			return interpolationTrignonometric;
+		}
 		case 'hermite': {
 			return interpolationHermite;
 		}
@@ -47,16 +51,14 @@ const messageToConstructor = (
 		};
 	}
 	return {
-		xSize: constructor.xSize ?? 256,
-		ySize: constructor.ySize ?? 256,
-		zSize: constructor.zSize ?? 256,
+		xSize: 0, //constructor.xSize ?? 10,
+		ySize: 0, //constructor.ySize ?? 10,
+		zSize: 0, //constructor.zSize ?? 10,
 		blendFunction: interpolationSwitch(constructor.interpolation),
-		_forceHighMemoryMode: constructor.forceHigh ?? false,
-		_forceLowMemoryMode: constructor.forceLow ?? false,
 	};
 };
 
-self.addEventListener('message', (message) => {
+self.addEventListener('message', (message): void => {
 	const data = message.data as messageData;
 
 	if (data.constructor?.canvasHeight) {
@@ -70,38 +72,26 @@ self.addEventListener('message', (message) => {
 		self.postMessage(update(data.update.frame));
 	}
 });
-
+const resolution = 2,
+	scale = 10;
 const update = (frame: number): ImageData => {
 	const [width, height, rand] = noiseMachine;
 
 	const colorArray = new Uint8ClampedArray(4 * width * height);
 
-	for (let x = 0; x < width; x += 4) {
-		for (let y = 0; y < height; y += 4) {
-			const color = Math.floor(rand(x / 25, y / 25, frame / 100) * 255);
-			rect(x, y, 4, 4, color, colorArray);
+	for (let x = 0; x < width; x += resolution) {
+		for (let y = 0; y < height; y += resolution) {
+			const color = Math.floor(
+				rand(
+					x / scale + frame / 75,
+					y / scale + frame / 100,
+					frame / 50
+				) * 0xff
+			);
+			rect(x, y, resolution, resolution, color, colorArray);
 		}
 	}
 
 	const image = new ImageData(colorArray, 500, 500);
 	return image;
-};
-
-const rect = (
-	x: number,
-	y: number,
-	width: number,
-	height: number,
-	fill: number,
-	colorArray: Uint8ClampedArray,
-	arrayWidth = 500
-) => {
-	for (let yIndex = y; yIndex < y + height; yIndex += 1) {
-		colorArray.fill(
-			fill,
-			x * 4 + yIndex * 4 * arrayWidth,
-			(x + width) * 4 + yIndex * 4 * arrayWidth
-		);
-	}
-	return colorArray;
 };

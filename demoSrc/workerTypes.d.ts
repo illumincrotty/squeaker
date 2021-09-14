@@ -1,4 +1,5 @@
-interface messageData {
+export type interpolation = 'hermite' | 'linear' | 'quintic' | 'trig';
+export interface messageData {
 	constructor?: {
 		canvasHeight: number;
 		canvaswidth: number;
@@ -10,14 +11,14 @@ interface messageData {
 		ySize?: number;
 		/** the z size before the noise starts to loop */
 		zSize?: number;
-		interpolation?: 'hermite' | 'linear' | 'quintic';
+		interpolation?: interpolation;
 		forceLow?: boolean;
 		forceHigh?: boolean;
 	};
 	update?: { frame: number };
 }
 
-interface messageData2d {
+export interface messageData2d {
 	constructor: {
 		canvasHeight: number;
 		canvasWidth: number;
