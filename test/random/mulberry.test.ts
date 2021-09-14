@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
 import test from 'ava';
 import {
 	mulberryFactory,
 	functionalMulberryFactory,
-} from '../src/random/randomIndex';
-import { rangeGenerator } from '../src/util';
+} from '../../src/random/randomIndex';
+import { rangeGenerator } from '../../src/util';
 
 test('Mulberry returns number', (t) => {
 	const mulberry = mulberryFactory(0);

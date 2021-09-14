@@ -1,6 +1,6 @@
 import test from 'ava';
-import { aleaFactory } from '../src/random/alea';
-import { rangeGenerator } from '../src/util';
+import { aleaFactory } from '../../src/random/alea';
+import { rangeGenerator } from '../../src/util';
 
 test('Alea Factory type tests', (t) => {
 	const alea = aleaFactory();

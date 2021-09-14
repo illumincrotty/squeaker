@@ -1,8 +1,8 @@
 import test from 'ava';
-import { aleaFactory } from '../src/random/randomIndex';
-import { perlinNoise2dFactory } from '../src/squeaker';
+import { aleaFactory } from '../../src/random/randomIndex';
+import { perlinNoise2dFactory as noiseGenerator } from '../../src/squeaker';
 
-import { flatGridGenerator, rangeGenerator } from '../src/util';
+import { flatGridGenerator, rangeGenerator } from '../../src/util';
 
 const _testing = (_parameter: {
 	xSize: number;
@@ -16,7 +16,7 @@ const _testing = (_parameter: {
 	accumulator: number,
 	tenths: number[]
 ] => {
-	const perlin2d = perlinNoise2dFactory({
+	const perlin2d = noiseGenerator({
 		// seed: 1_092_378,
 		xSize: _parameter.xSize,
 		ySize: _parameter.ySize,
@@ -89,7 +89,7 @@ const data = (() => {
 // _testing();
 
 test('Basic 2d test', (t) => {
-	const noise = perlinNoise2dFactory();
+	const noise = noiseGenerator();
 	t.is(noise(0, 0), 0.5);
 });
 
@@ -98,7 +98,7 @@ test('range is [0,1)', (t) => {
 		...flatGridGenerator(
 			{ start: 0, end: 10, step: 0.1 },
 			{ start: 0, end: 10, step: 0.1 },
-			perlinNoise2dFactory()
+			noiseGenerator()
 		),
 	];
 	t.true(noiseData.every((v) => v >= 0 && v < 1));
@@ -108,7 +108,7 @@ test('perlin 2d is repeatable/isomorphic', (t) => {
 	const random = aleaFactory().random,
 		randX = random() * 100,
 		randY = random() * 100;
-	const actual = perlinNoise2dFactory({ seed: 71_238 });
+	const actual = noiseGenerator({ seed: 71_238 });
 	t.is(actual(randX, randY), actual(randX, randY));
 });
 
@@ -116,13 +116,13 @@ test('perlin 2d is pseduo-random/seedable', (t) => {
 	const random = aleaFactory().random,
 		randX = random() * 100,
 		randY = random() * 100;
-	const actual = perlinNoise2dFactory({ seed: 71_238 });
-	const expected = perlinNoise2dFactory({ seed: 71_238 });
+	const actual = noiseGenerator({ seed: 71_238 });
+	const expected = noiseGenerator({ seed: 71_238 });
 	t.is(actual(randX, randY), expected(randX, randY));
 });
 
 test('Respects ranges', (t) => {
-	const noise = perlinNoise2dFactory({
+	const noise = noiseGenerator({
 		seed: 71_238,
 		xSize: 10,
 		ySize: 10,
@@ -146,7 +146,7 @@ test('Respects ranges', (t) => {
 });
 
 test('works in the negative', (t) => {
-	const noise = perlinNoise2dFactory({
+	const noise = noiseGenerator({
 		seed: 71_238,
 		xSize: 10,
 		ySize: 10,
@@ -156,7 +156,7 @@ test('works in the negative', (t) => {
 });
 
 test('respects range in the negative', (t) => {
-	const noise = perlinNoise2dFactory({
+	const noise = noiseGenerator({
 		seed: 71_238,
 		xSize: 10,
 		ySize: 10,
@@ -192,7 +192,7 @@ test('returns values in range [0,1]', (t) => {
 	t.is(Math.min(0, _min), 0);
 });
 
-test('creates bell curve distribution', (t) => {
+test('creates normal distribution', (t) => {
 	const [_a, _b, _count, _accumulator, _tenths] = data();
 	const distribution = [0, 2, 8, 16, 23, 23, 16, 8, 2, 0];
 	const set = _tenths.map(

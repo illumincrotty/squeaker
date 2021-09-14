@@ -1,12 +1,19 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import test from 'ava';
+import type { vector2d } from '../src/noiseTypes';
+import { cantorPairing, szudzikPair, rosenbergStrongPair } from '../src/util';
 import {
+	generatePermutationArray,
+	primeGenerator,
+	_appendFirst,
+} from '../src/util';
+import {
+	altHash,
+	dotProduct2d,
 	flatGridGenerator,
+	hash,
 	range,
 	rangeGenerator,
-	dotProduct2d,
-	altHash,
-	hash,
 	shuffle,
 } from '../src/util';
 
@@ -136,8 +143,8 @@ test('flatGrid big test', (t) => {
 	);
 });
 
-const oneZero = { x: 1, y: 0 },
-	negativeOneZero = { x: -1, y: 0 };
+const oneZero: vector2d = [1, 0],
+	negativeOneZero: vector2d = [-1, 0];
 test('dot product postive positive', (t) => {
 	t.is(dotProduct2d(oneZero, oneZero), 1);
 });
@@ -147,7 +154,7 @@ test('dot product postive negative', (t) => {
 });
 
 test('dot product partial', (t) => {
-	t.is(dotProduct2d(oneZero, { x: 0.25, y: 0.25 }), 0.25);
+	t.is(dotProduct2d(oneZero, [0.25, 0.25]), 0.25);
 });
 
 const hashData = [...rangeGenerator({ start: 0, end: 100_000 })].map((value) =>
@@ -172,4 +179,53 @@ test('Shuffle randomizes array order', (t) => {
 	t.notDeepEqual(shuffle1, numberSet);
 	t.notDeepEqual(shuffle2, numberSet);
 	t.notDeepEqual(shuffle2, shuffle1);
+});
+
+test('Generation of permutation array', (t) => {
+	t.notThrows(() => generatePermutationArray(1000), 'error on generation');
+});
+
+test('Primes', (t) => {
+	t.deepEqual(
+		primeGenerator(120_000)[10_000 - 1],
+		104_729,
+		'10,000th prime is correct'
+	);
+});
+
+test('_appendFirst', (t) => {
+	t.deepEqual(_appendFirst([1, 0, 0, 0]), [1, 0, 0, 0, 1]);
+});
+
+const xyPair = function* <t>(
+	x: number,
+	y: number,
+	func: (x: number, y: number) => t
+) {
+	for (let xIndex = 0; xIndex < x; xIndex++) {
+		for (let yIndex = 0; yIndex < y; yIndex++) {
+			yield func(xIndex, yIndex);
+		}
+	}
+};
+
+test('cantor pairing', (t) => {
+	const x = 1e3,
+		y = 1e3,
+		cantor = new Set(xyPair(x, y, cantorPairing));
+	t.is(cantor.size, x * y);
+});
+
+test('szudzik pairing', (t) => {
+	const x = 1e3,
+		y = 1e3,
+		szudzik = new Set(xyPair(x, y, szudzikPair));
+	t.is(szudzik.size, x * y);
+});
+
+test('rosenberg strong pairing', (t) => {
+	const x = 1e3,
+		y = 1e3,
+		roseStrong = new Set(xyPair(x, y, rosenbergStrongPair));
+	t.is(roseStrong.size, x * y);
 });

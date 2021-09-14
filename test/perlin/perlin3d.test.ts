@@ -1,10 +1,6 @@
 import test from 'ava';
-import { aleaFactory } from '../src/random/alea';
-import {
-	perlinNoise3dFactory,
-	perlinNoise3dFactoryHeavy,
-	perlinNoise3dFactoryLight,
-} from '../src/squeaker';
+import { aleaFactory } from '../../src/random/alea';
+import { perlinNoise3dFactory } from '../../src/squeaker';
 
 const noiseData: number[][][] = [];
 const generalNoiseGenerator = perlinNoise3dFactory();
@@ -47,7 +43,6 @@ test('perlin 3d is repeatable/isomorphic', (t) => {
 test('seed not random', (t) => {
 	t.is(
 		perlinNoise3dFactory({
-			_forceHighMemoryMode: true,
 			xSize: 3,
 			ySize: 3,
 			zSize: 3,
@@ -55,59 +50,4 @@ test('seed not random', (t) => {
 		})(0, 0, 0),
 		0.5
 	);
-});
-
-test('does not allow invalid options', (t) => {
-	t.throws(() => {
-		perlinNoise3dFactory({
-			_forceHighMemoryMode: true,
-			_forceLowMemoryMode: true,
-			xSize: 3,
-			ySize: 3,
-			zSize: 3,
-		});
-	});
-});
-
-test('Force low', (t) => {
-	t.is(
-		perlinNoise3dFactory({
-			_forceLowMemoryMode: true,
-			xSize: 3,
-			ySize: 3,
-			zSize: 3,
-		})(0, 0, 0),
-		0.5
-	);
-});
-
-test('Force High', (t) => {
-	t.is(
-		perlinNoise3dFactory({
-			_forceHighMemoryMode: true,
-			xSize: 3,
-			ySize: 3,
-			zSize: 3,
-		})(0, 0, 0),
-		0.5
-	);
-});
-test('Heavy works', (t) => {
-	const heavy = perlinNoise3dFactoryHeavy({
-		xSize: 200,
-		ySize: 200,
-		zSize: 200,
-		random: aleaFactory('97gikbv').random,
-	});
-	t.is(heavy(0, 0, 0), 0.5);
-});
-
-test('light works', (t) => {
-	const light = perlinNoise3dFactoryLight({
-		xSize: 200,
-		ySize: 200,
-		zSize: 200,
-		random: aleaFactory('97gikbv').random,
-	});
-	t.is(light(0, 0, 0), 0.5);
 });
