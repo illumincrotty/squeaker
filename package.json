@@ -23,7 +23,8 @@
 		"build": "pnpm test && microbundle",
 		"build:noTest": "microbundle",
 		"test": "ava test/**/*.spec.ts test/**/*.test.ts",
-		"coverage": "c8 ava test/**/*.spec.ts test/**/*.test.ts --reporter=text  --reporter=lcov",
+		"coverage": "c8 --reporter lcov --reporter text --skip-full pnpm test",
+		"report": "c8 report --reporter lcov --reporter text",
 		"doc": "lehre --template-path ./template.cjs -d src --write",
 		"benchmark": "pnpm node --loader=ts-node/esm --experimental-specifier-resolution=node --trace-warnings ./benchmarkDirectory/benchmark.ts"
 	},
