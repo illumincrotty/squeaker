@@ -1,13 +1,121 @@
-import { interpolate } from '../interpolation';
+import { interpolate2d } from '../interpolation';
 import type { noiseFunction2d, vector2d } from '../noiseTypes';
-import { aleaFactory } from '../random/randomIndex';
-import { consistentModulus, dotProduct2d, rangeGenerator } from '../util';
+import {
+	consistentModulus,
+	dotProduct2d,
+	generatePermutationArray,
+	getRandomLargePrime,
+	largePrimes,
+	pair2d,
+	shuffle,
+	_appendFirst,
+} from '../util';
 import {
 	gradients2D,
 	maxFix,
+	processPerlinOptions,
 	_defaultPerlinNoise2dOptions,
 } from './perlinConstants';
 import type { perlinNoiseOptions2d } from './perlinTypes';
+
+// TODO remove old permutation functions
+/* c8 ignore start */
+
+/**
+ * _lightPermutationsGenerator
+ *
+ * Generates a (comparatively) memory efficient set of permutations
+ *
+ * @private
+ * @param x - valid x input (+1)
+ * @param y - valid y input (+1)
+ * @param random - a random number generating function
+ * @returns function that takes numbers from the input ranges and returns a permuted gradient
+ */
+const _lightPermutationsGenerator = (
+	x: number,
+	y: number,
+	random: () => number
+): ((x: number, y: number) => vector2d) => {
+	const _xperms = generatePermutationArray(x + 1, random);
+	_xperms[_xperms.length - 1] = _xperms[0];
+
+	// const _yperms = new Uint32Array(y + 1).map(
+	// 	(_, _index) => altHash(_index * 31 + 0x1e_c1) & 0xf_ff_ff
+	// );
+	const _yperms = generatePermutationArray(y + 1, random);
+	_yperms[_yperms.length - 1] = _yperms[0];
+
+	return (x: number, y: number) =>
+		gradients2D[
+			// prettier-ignore
+			// _hash(_xperms[x] + _yperms[y] + _zperms[z]) // works but is slow
+			// _mix(_xperms[x], _yperms[y], _zperms[z]) // also works, also slow
+			// Math.abs((_xperms[x]) ^ (_yperms[y]) ^ (_zperms[z] ) * 6967)
+			// (_xperms[x] ^ _yperms[y] ^ _zperms[z]) // pretty fast but causes distinct visual artificts
+			// ((_xperms[x] >> (y & 0xf)) ^ (_yperms[y] >> (z & 8)) ^ (_zperms[z] >> (x & 0xf)))  // doesn't loop but does work
+			((_xperms[x] >> (_yperms[y] & 0x4)) ^
+			(_yperms[y] >> (_xperms[x] & 0x4)) )
+			% gradients2D.length
+		];
+};
+/* c8 ignore stop */
+
+/* c8 ignore start */
+/**
+ * _heavyPermutationsGenerator
+ *
+ * Generates a memory inefficient but fast function to return permutations
+ *
+ * @private
+ * @param x - valid x input (+1)
+ * @param y - valid y input (+1)
+ * @param rand - a function to generate random numbers
+ * @returns function that takes numbers from the input ranges and returns a permuted gradient
+ */
+const _heavyPermutationsGenerator = (
+	x: number,
+	y: number,
+	rand: () => number
+): ((x: number, y: number) => vector2d) => {
+	const _special = _appendFirst(
+		Array.from({ length: x }).map(() =>
+			_appendFirst(
+				Array.from({ length: y }).map(
+					() => gradients2D[Math.trunc(rand() * gradients2D.length)]
+				)
+			)
+		)
+	);
+
+	return (x: number, y: number) => _special[x][y];
+};
+/* c8 ignore stop*/
+
+/**
+ * _permutationGenerator
+ *
+ * generates permutations
+ *
+ * @private
+ * @param rand - random number generator
+ * @returns a function which converts coordinates into pseduo-random vectors
+ */
+const _permutationGenerator = (
+	rand: () => number
+): ((x: number, y: number) => vector2d) => {
+	const _primeMultiplier = getRandomLargePrime(rand);
+	const _scale = Math.SQRT1_2;
+	const _size = 0xf_ff;
+	const _primes: vector2d[] = shuffle(largePrimes, Math.random)
+		.slice(0, _size + 1)
+		.map((prime) => [
+			Math.cos(prime % (Math.PI * 2)) * _scale,
+			Math.sin(prime % (Math.PI * 2)) * _scale,
+		]);
+
+	return (x: number, y: number) => _primes[pair2d(x, y) % _size];
+};
 
 /**
  * Generates a 2D perlin noise function
@@ -16,102 +124,76 @@ import type { perlinNoiseOptions2d } from './perlinTypes';
  * @returns 2D perlin noise function
  */
 export const perlinNoise2dFactory = (
-	options?: perlinNoiseOptions2d
+	options?: Partial<perlinNoiseOptions2d>
 ): noiseFunction2d => {
 	// use input options first,
 	// then fallback on default options,
-	const _options = {
+	const _options = processPerlinOptions({
 		..._defaultPerlinNoise2dOptions,
 		...options,
-	};
+	});
 
-	if (options && options.seed) {
-		_options.random = aleaFactory(options.seed.toString(10)).random;
-	}
+	const _perms = _permutationGenerator(_options.random);
 
-	/**
-	 * A 2D array of size domain +1 X range +1 filled with pseudo-randomly assigned 2D vectors from the gradient table
-	 *
-	 * The last values of each row are the same as the first, and the last row is the same as the first. This means you can mod by domain or range and add 1 and still be in a valid spot
-	 */
-	const _perms = ((): vector2d[][] => {
-		const _temporary = [
-			...rangeGenerator({ start: 0, end: _options.xSize }),
-		]
-			.map(() =>
-				[...rangeGenerator({ start: 0, end: _options.ySize })].map(
-					() =>
-						gradients2D[
-							Math.trunc(_options.random() * gradients2D.length)
-						]
-				)
-			)
-			.map((row) => [...row, row[0]]);
-		return [..._temporary, _temporary[0]];
-	})();
+	const getX0 = _options.xSize
+		? (_xFloor: number) => consistentModulus(_xFloor, _options.xSize)
+		: (_xFloor: number) => _xFloor;
+
+	const getX1 = _options.xSize
+		? (_x0: number) => (_x0 + 1 >= _options.xSize ? 0 : _x0 + 1)
+		: (_x0: number) => _x0 + 1;
+
+	const getY0 = _options.ySize
+		? (_yFloor: number) => consistentModulus(_yFloor, _options.ySize)
+		: (_yFloor: number) => _yFloor;
+
+	const getY1 = _options.xSize
+		? (_y0: number) => (_y0 + 1 >= _options.ySize ? 0 : _y0 + 1)
+		: (_y0: number) => _y0 + 1;
 
 	// actual perlin noise function
 	return (x: number, y: number): number => {
 		const _xFloor = Math.floor(x),
 			_yFloor = Math.floor(y),
 			/** integer below input x */
-			_x0 = consistentModulus(_xFloor, _options.xSize),
+			_x0 = getX0(_xFloor),
 			/** integer below input y */
-			_y0 = consistentModulus(_yFloor, _options.ySize),
+			_y0 = getY0(_yFloor),
 			/** integer above input x */
-			_x1 = _x0 + 1,
+			_x1 = getX1(_x0),
 			/** integer above input y */
-			_y1 = _y0 + 1,
+			_y1 = getY1(_y0),
 			/**  fractional x value */
-			_u = x - _xFloor,
+			_xFrac = x - _xFloor,
 			/**  fractional y value */
-			_v = y - _yFloor,
+			_yFrac = y - _yFloor,
 			/**  fractional x value with a fade function applied */
-			_xFade = interpolate(0, 1, _u, _options.blendFunction),
+			_xFade = _options.blendFunction(_xFrac),
 			/**  fractional y value with a fade function applied */
-			_yFade = interpolate(0, 1, _v, _options.blendFunction);
+			_yFade = _options.blendFunction(_yFrac);
 
 		const /**  gradient vector bottom left */
-			_g00 = _perms[_x0][_y0],
+			_g00 = _perms(_x0, _y0),
 			/**  gradient vector top left */
-			_g01 = _perms[_x0][_y1],
+			_g01 = _perms(_x0, _y1),
 			/**  gradient vector bottom right */
-			_g10 = _perms[_x1][_y0],
+			_g10 = _perms(_x1, _y0),
 			/**  gradient vector top right */
-			_g11 = _perms[_x1][_y1];
+			_g11 = _perms(_x1, _y1);
 
 		const /**  dot product of bottom left corner gradient and the vector to the input point from that corner */
-			_n00 = dotProduct2d(_g00, {
-				x: _u,
-				y: _v,
-			}),
+			_n00 = dotProduct2d(_g00, [_xFrac, _yFrac]),
 			/**  dot product of top left corner gradient and the vector to the input point from that corner */
-			_n01 = dotProduct2d(_g01, {
-				x: _u,
-				y: _v - 1,
-			}),
+			_n01 = dotProduct2d(_g01, [_xFrac, _yFrac - 1]),
 			/**  dot product of bottom right corner gradient and the vector to the input point from that corner */
-			_n10 = dotProduct2d(_g10, {
-				x: _u - 1,
-				y: _v,
-			}),
+			_n10 = dotProduct2d(_g10, [_xFrac - 1, _yFrac]),
 			/**  dot product of top right corner gradient and the vector to the input point from that corner */
-			_n11 = dotProduct2d(_g11, {
-				x: _u - 1,
-				y: _v - 1,
-			});
+			_n11 = dotProduct2d(_g11, [_xFrac - 1, _yFrac - 1]);
 
-		const /** interpolated value of bottom left dot product and bottom right dot product with respect to x */
-			_nx0 = interpolate(_n00, _n10, _xFade),
-			/** interpolated value of top middle value of top left dot product and top right dot product with respect to x */
-			_nx1 = interpolate(_n01, _n11, _xFade),
-			/** interpolated value of bottom interpolant and top interpolant with respect to y */
-			_nxy = interpolate(_nx0, _nx1, _yFade);
+		const _nxy = interpolate2d(_n00, _n01, _n10, _n11, _xFade, _yFade);
 
 		// shift up and limit the max so instead of going to 1, it only goes to extremely slightly below 1
 		// without shift the output is [-.5, .5] and with shift and limit it's [0,1)
 		return Math.min(_nxy + 0.5, maxFix);
 	};
 };
-
-export const perlin2d = perlinNoise2dFactory();
