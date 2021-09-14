@@ -1,4 +1,11 @@
-import type { vector2d, vectorArray3d } from './noiseTypes';
+import type {
+	baseNoiseOptions1d,
+	baseNoiseOptions2d,
+	baseNoiseOptions3d,
+	vector2d,
+	vector3d,
+} from './noiseTypes';
+import { aleaFactory } from './random/alea';
 
 /**
  * Simple range utility, not very efficient
@@ -14,12 +21,23 @@ export const range = (start: number, end: number, step = 1): number[] => {
 	return [start, ...range(start + step, end, step)];
 };
 
+/**
+ * rangeParameters
+ *
+ * the parameters for a range generating function
+ */
 export interface rangeParameters {
-	/** starting number (inclusive) */
+	/**
+	 * starting number (inclusive)
+	 */
 	start: number;
-	/** ending number (exclusive) */
+	/**
+	 * ending number (exclusive)
+	 */
 	end: number;
-	/** step per iteration (can be negative), defaults to 1*/
+	/**
+	 * step per iteration (can be negative), defaults to 1
+	 */
 	step?: number;
 }
 
@@ -96,8 +114,11 @@ export const consistentModulus = (divisor: number, dividend: number): number =>
  * @param vectorB - a given 2D vector
  * @returns scalar value
  */
-export const dotProduct2d = (vectorA: vector2d, vectorB: vector2d): number => {
-	return vectorA.x * vectorB.x + vectorA.y * vectorB.y;
+export const dotProduct2d = (
+	vectorA: Readonly<vector2d>,
+	vectorB: Readonly<vector2d>
+): number => {
+	return vectorA[0] * vectorB[0] + vectorA[1] * vectorB[1];
 };
 
 /**
@@ -109,10 +130,7 @@ export const dotProduct2d = (vectorA: vector2d, vectorB: vector2d): number => {
  * @param vectorB - a given 2D vector
  * @returns scalar value
  */
-export const dotProduct3d = (
-	vectorA: vectorArray3d,
-	vectorB: vectorArray3d
-): number => {
+export const dotProduct3d = (vectorA: vector3d, vectorB: vector3d): number => {
 	return (
 		vectorA[0] * vectorB[0] +
 		vectorA[1] * vectorB[1] +
@@ -130,10 +148,10 @@ export const dotProduct3d = (
  * @returns a random permutation of the input array
  */
 export const shuffle = <type>(
-	input: type[],
+	input: readonly type[],
 	random: () => number = Math.random
 ): type[] => {
-	const _shuffledArray: type[] = [...input];
+	const _shuffledArray = [...input];
 	let _temporary: type;
 	for (let _index = input.length - 1; _index >= 0; _index--) {
 		const _rand = Math.floor(_index * random());
@@ -152,9 +170,9 @@ export const shuffle = <type>(
  * @returns a hashed version of that number (32-bit only)
  */
 export const hash = (a: number): number => {
-	a = a ^ 61 ^ (a >> 16);
+	a = a ^ 61 ^ (a >>> 16);
 	a = a + (a << 3);
-	a ^ (a >> 4);
+	a ^ (a >>> 4);
 	a *= 0x27_d4_eb_2d;
 	a = a ^ (a >> 15);
 
@@ -169,39 +187,192 @@ export const hash = (a: number): number => {
  */
 export const altHash = (a: number): number => {
 	a = (a ^ 0xde_ad_be_ef) + (a << 4);
-	a = a ^ (a >> 10);
+	a = a ^ (a >>> 10);
 	a = a + (a << 7);
-	a = a ^ (a >> 13);
+	a = a ^ (a >>> 13);
 	return a;
 };
 
-// export const mix = (a: number, b: number, c: number) => {
-// 	a -= b;
-// 	a -= c;
-// 	a ^= c >> 13;
-// 	b -= c;
-// 	b -= a;
-// 	b ^= a << 8;
-// 	c -= a;
-// 	c -= b;
-// 	c ^= b >> 13;
-// 	a -= b;
-// 	a -= c;
-// 	a ^= c >> 12;
-// 	b -= c;
-// 	b -= a;
-// 	b ^= a << 16;
-// 	c -= a;
-// 	c -= b;
-// 	c ^= b >> 5;
-// 	a -= b;
-// 	a -= c;
-// 	a ^= c >> 3;
-// 	b -= c;
-// 	b -= a;
-// 	b ^= a << 10;
-// 	c -= a;
-// 	c -= b;
-// 	c ^= b >> 15;
-// 	return c & 0xff_ff;
-// };
+/**
+ * Generates an array of permuted values
+ *
+ * @param size - the desired size of the 32bit array
+ * @param random - a random number generator
+ * @returns an array of permuted values
+ */
+export const generatePermutationArray = (
+	size: number,
+	random: () => number = aleaFactory().random
+): Uint32Array =>
+	new Uint32Array(size).map((_, _index) => Math.trunc(random() * 1_048_576));
+
+/**
+ * _appendFirst
+ *
+ * appends the first value to the end of the list
+ *
+ * @private
+ * @param input - any list
+ * @returns the list with the first value appended to the end
+ */
+export const _appendFirst = <Type>(input: readonly Type[]): Type[] => [
+	...input,
+	input[0],
+];
+
+/**
+ * primeGenerator
+ *
+ * Generates primes using the Sieve of Eratosthenes algorithm
+ *
+ * @param max - the max value of the desired prime numbers
+ * @returns an array of prime numbers between 2 and max
+ */
+export const primeGenerator = (max = 1000): number[] => {
+	const data = Array.from({ length: max }).fill(true) as boolean[],
+		lim = Math.sqrt(max),
+		primes: number[] = [];
+	for (let spot = 2; spot < max; spot++) {
+		if (data[spot]) {
+			if (spot <= lim) {
+				primes.push(spot);
+				for (let current = spot * 2; current < max; current += spot) {
+					data[current] = false;
+				}
+			} else {
+				primes.push(spot);
+			}
+		}
+	}
+
+	return primes;
+};
+
+/**
+ * aboveMin
+ *
+ * filters out the values below a certain threshold
+ *
+ * @private
+ * @param inputArray - the array of values to filter
+ * @param minimum - the threshold value to compare the values in the array to, uses greather than or equal to
+ * @returns a new array of values from the input array that are greater than or equal to minimum
+ */
+const aboveMin = (inputArray: readonly number[], minimum: number): number[] =>
+	inputArray.filter((value) => value >= minimum);
+
+/** primes between 2^15 and 2^16 */
+export const largePrimes: readonly number[] = aboveMin(
+	primeGenerator(2 ** 17),
+	2 ** 15
+);
+
+/*@__PURE__*/
+export const getRandomLargePrime = (rand: () => number): number =>
+	largePrimes[Math.floor(largePrimes.length * rand())];
+
+/**
+ *	Rosenberg Strong Pairing
+ *
+ *	bijection which maps N²->N
+ *
+ * @param x - the x coordinate
+ * @param y - the y coordinate
+ * @returns the paired value
+ */
+/*@__PURE__*/
+export const rosenbergStrongPair = (x: number, y: number): number =>
+	x < y ? y * y + x : x * x + 2 * x - y;
+
+/**
+ *	Cantor Pairing
+ *
+ *	bijection which maps N²->N
+ *
+ * @param x - the x coordinate
+ * @param y - the y coordinate
+ * @returns the paired value
+ */
+/*@__PURE__*/
+export const cantorPairing = (x: number, y: number): number =>
+	((x + y) * (x + y + 1)) / 2 + x;
+
+/**
+ *	Szudzik Pairing
+ *
+ *	bijection which maps N²->N at 100% efficiency
+ *
+ * @param x - the x coordinate
+ * @param y - the y coordinate
+ * @returns the paired value
+ */
+/*@__PURE__*/
+export const szudzikPair = (x: number, y: number): number =>
+	x >= y ? x * x + x + y : y * y + x;
+
+/**
+ *	Pairing
+ *
+ *	bijection which maps N²->N
+ *
+ * @param x - the x coordinate
+ * @param y - the y coordinate
+ * @returns the paired value
+ */
+/*@__PURE__*/
+/*@__INLINE__*/
+export const pair2d = (x: number, y: number): number => szudzikPair(x, y);
+
+/**
+ *	Pairing
+ *
+ *	bijection which maps N^3->N
+ *
+ * @param x - the x coordinate
+ * @param y - the y coordinate
+ * @param z - the z coordinate
+ * @returns the paired value
+ */
+/*@__PURE__*/
+/*@__INLINE__*/
+export const pair3d = (x: number, y: number, z: number): number =>
+	szudzikPair(szudzikPair(x, y) * 17, z);
+
+/**
+ * processOptions
+ *
+ * converts partial input options into a standard, more usable form
+ *
+ * @private
+ * @param options - an object containing noise options
+ * @returns the options modified to have the required values
+ */
+export const processOptions = <
+	t extends baseNoiseOptions1d | baseNoiseOptions2d | baseNoiseOptions3d
+>(
+	options: t
+): Required<t> => {
+	if (options.xSize && typeof options.xSize === 'number') {
+		options.xSize = Math.ceil(options.xSize);
+	}
+	if (
+		'ySize' in options &&
+		options.ySize &&
+		typeof options.ySize === 'number'
+	) {
+		options.ySize = Math.ceil(options.ySize);
+	}
+	if (
+		'zSize' in options &&
+		options.zSize &&
+		typeof options.zSize === 'number'
+	) {
+		options.zSize = Math.ceil(options.zSize);
+	}
+
+	if (options.seed && !options.random) {
+		options.random = aleaFactory(options.seed.toString()).random;
+	}
+
+	return options as Required<t>;
+};
