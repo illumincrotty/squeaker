@@ -26,6 +26,7 @@
 		"coverage": "c8 --reporter lcov --reporter text --skip-full pnpm test",
 		"report": "c8 report --reporter lcov --reporter text",
 		"doc": "lehre --template-path ./template.cjs -d src --write",
+		"alphaBump": "pnpm version prerelease --preid alpha --git-tag-version",
 		"benchmark": "pnpm node --loader=ts-node/esm --experimental-specifier-resolution=node --trace-warnings ./benchmarkDirectory/benchmark.ts"
 	},
 	"author": "Brian Crotty",
