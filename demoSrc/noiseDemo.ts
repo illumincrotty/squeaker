@@ -1,7 +1,16 @@
-import NoiseWorker from './noiseWorker3d?worker&inline';
-import NoiseWorker2d from './noiseWorker2d?worker&inline';
-import '../assets/styles/styles.css';
 import '../assets/styles/noiseDemo.css';
+import '../assets/styles/styles.css';
+import { drawCanvasPlaceholders } from './demoUtil';
+import {
+	drawHermite,
+	drawLinear,
+	drawQuintic,
+	drawTrig,
+} from './interpolationDemo';
+import NoiseWorker from './noiseWorker3d?worker';
+import { drawPerlin1d, drawPerlin2d, drawPerlin2dTile } from './perlinDemo';
+import { drawValue1d, drawValue2d } from './valueDemo';
+import type { messageData } from './workerTypes';
 
 const createWorker = (
 	canvas: HTMLCanvasElement,
@@ -9,16 +18,29 @@ const createWorker = (
 ) => {
 	const worker = new NoiseWorker();
 	const context = canvas.getContext('2d');
+	let frame = 0;
 	if (context) {
-		const imageQueue: ImageData[] = [];
+		const imageQueue: ImageBitmap[] = [];
+		// const imageQueue: ImageData[] = [];
+
 		const setup = async () => {
 			context.fillStyle = 'grey';
 			context.fillRect(0, 0, canvas.width, canvas.height);
-			const append = async (pic: ImageData) =>
-				Promise.resolve(imageQueue.push(pic));
+			const append = async (pic: ImageData) => {
+				return Promise.resolve(
+					imageQueue.push(await createImageBitmap(pic))
+				);
+			};
+			// Image Data
+			// const append = async (pic: ImageData) => {
+			// 	Promise.resolve(imageQueue.push(pic));
+			// };
 
 			worker.addEventListener('message', (message) => {
 				void append(message.data);
+				if (imageQueue.length < 5) {
+					worker.postMessage({});
+				}
 			});
 
 			worker.postMessage({
@@ -28,14 +50,23 @@ const createWorker = (
 		};
 
 		void setup();
-
-		return (frame: number) => {
+		const request = (requestFrame: number) => {
 			worker.postMessage({
-				update: { frame: frame },
+				update: { frame: requestFrame },
 			} as messageData);
+			frame++;
+		};
+
+		return () => {
+			if (imageQueue.length < 5) {
+				request(frame);
+				request(frame);
+				request(frame);
+			}
 			if (imageQueue.length > 1)
-				context.putImageData(imageQueue.shift() as ImageData, 0, 0);
-			// return Promise.resolve();
+				context.drawImage(imageQueue.shift() as ImageBitmap, 0, 0);
+			// if (imageQueue.length > 1)
+			// 	context.putImageData(imageQueue.shift() as ImageData, 0, 0);
 		};
 	}
 
@@ -45,61 +76,83 @@ const createWorker = (
 };
 
 const scope = () => {
-	const _canvas2d = document.querySelector('#perlin2d') as HTMLCanvasElement,
-		_canvas3dHeavy = document.querySelector(
-			'#perlin3d-default'
+	const canvasPerlin2d = document.querySelector(
+			'#perlin2d'
 		) as HTMLCanvasElement,
-		_canvas3dLight = document.querySelector(
-			'#perlin3d-scale'
+		canvasPerlin2dTile = document.querySelector(
+			'#perlin2dTile'
+		) as HTMLCanvasElement,
+		canvasPerlin3dHeavy = document.querySelector(
+			'#perlin3dHeavy'
+		) as HTMLCanvasElement,
+		canvasPerlin3dLight = document.querySelector(
+			'#perlin3dLight'
+		) as HTMLCanvasElement,
+		canvasPerlin1d = document.querySelector(
+			'#perlin1d'
+		) as HTMLCanvasElement,
+		canvasValue1d = document.querySelector('#value1d') as HTMLCanvasElement,
+		canvasValue2d = document.querySelector('#value2d') as HTMLCanvasElement,
+		canvasLinear = document.querySelector(
+			'#interpolationLinear'
+		) as HTMLCanvasElement,
+		canvasHermite = document.querySelector(
+			'#interpolationHermite'
+		) as HTMLCanvasElement,
+		canvasQuintic = document.querySelector(
+			'#interpolationQuintic'
+		) as HTMLCanvasElement,
+		canvasTrig = document.querySelector(
+			'#interpolationTrig'
 		) as HTMLCanvasElement;
 
-	const solidCanvasFill = (
-		canvas: HTMLCanvasElement,
-		fill: CanvasRenderingContext2D['fillStyle'] = 'white'
-	) => {
-		const _context = canvas.getContext('2d');
-		if (_context) {
-			_context.fillStyle = fill;
-			_context.fillRect(0, 0, canvas.width, canvas.height);
-		}
-	};
+	drawCanvasPlaceholders([
+		canvasValue1d,
+		canvasPerlin1d,
+		canvasValue2d,
+		canvasPerlin2d,
+		canvasPerlin2dTile,
+		canvasPerlin3dLight,
+		canvasPerlin3dHeavy,
+		canvasLinear,
+		canvasHermite,
+		canvasQuintic,
+		canvasTrig,
+	]);
 
-	const drawCanvasPlaceholders = () => {
-		solidCanvasFill(_canvas2d);
-		solidCanvasFill(_canvas3dHeavy);
-		solidCanvasFill(_canvas3dLight);
-	};
-
-	drawCanvasPlaceholders();
-
-	const workerHeavy = createWorker(_canvas3dHeavy, {
+	const workerHeavy = createWorker(canvasPerlin3dHeavy, {
 		canvasHeight: 500,
 		canvaswidth: 500,
 		seed: 563_729_047,
+		xSize: 25,
+		ySize: 25,
 		forceHigh: true,
+		interpolation: 'hermite',
 	});
-	const workerLight = createWorker(_canvas3dLight, {
+	const workerLight = createWorker(canvasPerlin3dLight, {
 		canvasHeight: 500,
 		canvaswidth: 500,
 		seed: 563_759_047,
+		xSize: 25,
+		ySize: 25,
 		forceLow: true,
+		interpolation: 'hermite',
 	});
 
-	const worker2d = new NoiseWorker2d();
-	worker2d.addEventListener('message', (message) => {
-		_canvas2d
-			.getContext('2d')
-			?.putImageData(message.data as ImageData, 0, 0);
-	});
+	// Perlin
+	void drawPerlin1d(canvasPerlin1d);
+	void drawPerlin2d(canvasPerlin2d);
+	void drawPerlin2dTile(canvasPerlin2dTile);
 
-	worker2d.postMessage({
-		constructor: {
-			canvasHeight: _canvas2d.height,
-			canvasWidth: _canvas2d.width,
-			interpolation: 'quintic',
-			seed: 823_662_918,
-		},
-	} as messageData2d);
+	// Value
+	void drawValue1d(canvasValue1d);
+	void drawValue2d(canvasValue2d);
+
+	// interpolation
+	void drawLinear(canvasLinear);
+	void drawHermite(canvasHermite);
+	void drawQuintic(canvasQuintic);
+	void drawTrig(canvasTrig);
 
 	const _purpleGradient = [
 			'#eeb4b3',
@@ -118,11 +171,11 @@ const scope = () => {
 
 		switch (frame % 2) {
 			case 0: {
-				void workerHeavy(frame);
+				void workerHeavy();
 				break;
 			}
 			case 1: {
-				void workerLight(frame);
+				void workerLight();
 				break;
 			}
 			default:
