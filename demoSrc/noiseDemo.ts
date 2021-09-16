@@ -25,9 +25,7 @@ void import('./perlinDemo').then(
 );
 
 // Perlin 3D
-void import('./workerCall').then(async (worker) =>
-	worker.animate(getCanvasFromID('perlin3d'), getCanvasFromID('perlin3dTile'))
-);
+void import('./workerCall').then(async (worker) => worker.animate());
 
 const canvasValue1d = getCanvasFromID('value1d'),
 	canvasValue2d = getCanvasFromID('value2d'),

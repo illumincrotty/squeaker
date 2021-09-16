@@ -8,6 +8,8 @@ import type { interpolationFunction } from './noiseTypes';
  * @param mid - a value in domain [0,1]
  * @returns a number between start and end
  */
+/*@__PURE__*/
+/*@__INLINE__*/
 export const interpolate = (start: number, end: number, mid: number): number =>
 	start * (1 - mid) + end * mid;
 

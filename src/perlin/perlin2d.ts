@@ -135,34 +135,63 @@ export const perlinNoise2dFactory = (
 
 	const _perms = _permutationGenerator(_options.random);
 
-	const getX0 = _options.xSize
+	const _getX0 = _options.xSize
 		? (_xFloor: number) => consistentModulus(_xFloor, _options.xSize)
 		: (_xFloor: number) => _xFloor;
 
-	const getX1 = _options.xSize
+	const _getX1 = _options.xSize
 		? (_x0: number) => (_x0 + 1 >= _options.xSize ? 0 : _x0 + 1)
 		: (_x0: number) => _x0 + 1;
 
-	const getY0 = _options.ySize
+	const _getY0 = _options.ySize
 		? (_yFloor: number) => consistentModulus(_yFloor, _options.ySize)
 		: (_yFloor: number) => _yFloor;
 
-	const getY1 = _options.xSize
+	const _getY1 = _options.ySize
 		? (_y0: number) => (_y0 + 1 >= _options.ySize ? 0 : _y0 + 1)
 		: (_y0: number) => _y0 + 1;
+
+	const _posToPerms = (
+		xFloor: number,
+		yFloor: number
+	): ReturnType<typeof _permutePosition> => {
+		const x0 = _getX0(xFloor),
+			x1 = _getX1(x0);
+		const y0 = _getY0(yFloor),
+			y1 = _getY1(y0);
+		return _permutePosition(x0, x1, y0, y1);
+	};
+
+	const _permutePosition = (
+		x0: number,
+		x1: number,
+		y0: number,
+		y1: number
+	): readonly [vector2d, vector2d, vector2d, vector2d] => [
+		_perms(x0, y0),
+		/**  gradient vector top left */
+		_perms(x0, y1),
+		/**  gradient vector bottom right */
+		_perms(x1, y0),
+		/**  gradient vector top right */
+		_perms(x1, y1),
+	];
+
+	const _dotArray = (
+		gradients: ReturnType<typeof _posToPerms>,
+		_xFrac: number,
+		_yFrac: number
+	): readonly [number, number, number, number] => [
+		dotProduct2d(gradients[0], [_xFrac, _yFrac]),
+		dotProduct2d(gradients[1], [_xFrac, _yFrac - 1]),
+		dotProduct2d(gradients[2], [_xFrac - 1, _yFrac]),
+		dotProduct2d(gradients[3], [_xFrac - 1, _yFrac - 1]),
+	];
 
 	// actual perlin noise function
 	return (x: number, y: number): number => {
 		const _xFloor = Math.floor(x),
 			_yFloor = Math.floor(y),
-			/** integer below input x */
-			_x0 = getX0(_xFloor),
-			/** integer below input y */
-			_y0 = getY0(_yFloor),
-			/** integer above input x */
-			_x1 = getX1(_x0),
-			/** integer above input y */
-			_y1 = getY1(_y0),
 			/**  fractional x value */
 			_xFrac = x - _xFloor,
 			/**  fractional y value */
@@ -172,23 +201,40 @@ export const perlinNoise2dFactory = (
 			/**  fractional y value with a fade function applied */
 			_yFade = _options.blendFunction(_yFrac);
 
-		const /**  gradient vector bottom left */
-			_g00 = _perms(_x0, _y0),
-			/**  gradient vector top left */
-			_g01 = _perms(_x0, _y1),
-			/**  gradient vector bottom right */
-			_g10 = _perms(_x1, _y0),
-			/**  gradient vector top right */
-			_g11 = _perms(_x1, _y1);
+		// /** integer below input x */
+		// _x0 = _getX0(_xFloor),
+		// /** integer below input y */
+		// _y0 = _getY0(_yFloor),
+		// /** integer above input x */
+		// _x1 = _getX1(_x0),
+		// /** integer above input y */
+		// _y1 = _getY1(_y0),
 
-		const /**  dot product of bottom left corner gradient and the vector to the input point from that corner */
-			_n00 = dotProduct2d(_g00, [_xFrac, _yFrac]),
-			/**  dot product of top left corner gradient and the vector to the input point from that corner */
-			_n01 = dotProduct2d(_g01, [_xFrac, _yFrac - 1]),
-			/**  dot product of bottom right corner gradient and the vector to the input point from that corner */
-			_n10 = dotProduct2d(_g10, [_xFrac - 1, _yFrac]),
-			/**  dot product of top right corner gradient and the vector to the input point from that corner */
-			_n11 = dotProduct2d(_g11, [_xFrac - 1, _yFrac - 1]);
+		// const /**  gradient vector bottom left */
+		// 	_g00 = _perms(_x0, _y0),
+		// 	/**  gradient vector top left */
+		// 	_g01 = _perms(_x0, _y1),
+		// 	/**  gradient vector bottom right */
+		// 	_g10 = _perms(_x1, _y0),
+		// 	/**  gradient vector top right */
+		// 	_g11 = _perms(_x1, _y1);
+
+		// const [_g00, _g01, _g10, _g11] = _posToPerms(_xFloor, _yFloor);
+
+		const [_n00, _n01, _n10, _n11] = _dotArray(
+			_posToPerms(_xFloor, _yFloor),
+			_xFrac,
+			_yFrac
+		);
+
+		// const /**  dot product of bottom left corner gradient and the vector to the input point from that corner */
+		// 	_n00 = dotProduct2d(_g00, [_xFrac, _yFrac]),
+		// 	/**  dot product of top left corner gradient and the vector to the input point from that corner */
+		// 	_n01 = dotProduct2d(_g01, [_xFrac, _yFrac - 1]),
+		// 	/**  dot product of bottom right corner gradient and the vector to the input point from that corner */
+		// 	_n10 = dotProduct2d(_g10, [_xFrac - 1, _yFrac]),
+		// 	/**  dot product of top right corner gradient and the vector to the input point from that corner */
+		// 	_n11 = dotProduct2d(_g11, [_xFrac - 1, _yFrac - 1]);
 
 		const _nxy = interpolate2d(_n00, _n01, _n10, _n11, _xFade, _yFade);
 

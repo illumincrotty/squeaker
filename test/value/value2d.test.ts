@@ -20,7 +20,7 @@ const _testing = (_parameter: {
 	accumulator: number,
 	tenths: number[]
 ] => {
-	const perlin2d = noiseGenerator({
+	const noise = noiseGenerator({
 		// seed: 1_092_378,
 		xSize: _parameter.xSize,
 		ySize: _parameter.ySize,
@@ -37,7 +37,7 @@ const _testing = (_parameter: {
 			end: _parameter.ySize,
 			step: _parameter.ySize / _parameter.yDiv,
 		},
-		perlin2d
+		noise
 	);
 	let noiseData = noiseGen.next(),
 		count = 0,
@@ -108,7 +108,7 @@ test('range is [0,1)', (t) => {
 	t.true(noiseData.every((v) => v >= 0 && v < 1));
 });
 
-test('perlin 2d is repeatable/isomorphic', (t) => {
+test('value 2d is repeatable/isomorphic', (t) => {
 	const random = aleaFactory().random,
 		randX = random() * 100,
 		randY = random() * 100;
@@ -116,7 +116,7 @@ test('perlin 2d is repeatable/isomorphic', (t) => {
 	t.is(actual(randX, randY), actual(randX, randY));
 });
 
-test('perlin 2d is pseduo-random/seedable', (t) => {
+test('value 2d is pseduo-random/seedable', (t) => {
 	const random = aleaFactory().random,
 		randX = random() * 100,
 		randY = random() * 100;

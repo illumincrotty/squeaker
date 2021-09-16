@@ -3,6 +3,7 @@
  *
  * the interface of a 1d noise function
  */
+/*@__INLINE__*/
 export interface noiseFunction1d {
 	/**
 	 *
@@ -19,6 +20,7 @@ export interface noiseFunction1d {
  *
  * the interface of a 2d noise function
  */
+/*@__INLINE__*/
 export interface noiseFunction2d {
 	/**
 	 * 2D Noise
@@ -35,6 +37,7 @@ export interface noiseFunction2d {
  *
  * the interface of a 3d noise function
  */
+/*@__INLINE__*/
 export interface noiseFunction3d {
 	/**
 	 * 3D Noise
@@ -52,6 +55,7 @@ export interface noiseFunction3d {
  *
  * the interface of a 4d noise function
  */
+/*@__INLINE__*/
 export interface noiseFunction4d {
 	/**
 	 * 4D Noise
@@ -70,6 +74,7 @@ export interface noiseFunction4d {
  *
  * the interface of an interpolation function
  */
+/*@__INLINE__*/
 export interface interpolationFunction {
 	/**
 	 * Interpolation function

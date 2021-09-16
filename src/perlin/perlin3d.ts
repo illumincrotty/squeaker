@@ -1,14 +1,7 @@
-import { interpolate } from '../interpolation';
+import { interpolate3d } from '../interpolation';
 import type { noiseFunction3d, vector3d } from '../noiseTypes';
+import { consistentModulus, dotProduct3d, pair3d } from '../util';
 import {
-	consistentModulus,
-	dotProduct3d,
-	generatePermutationArray,
-	pair3d,
-	_appendFirst,
-} from '../util';
-import {
-	gradients3D,
 	maxFix,
 	processPerlinOptions,
 	_defaultPerlinNoise3dOptions,
@@ -41,7 +34,7 @@ const _generateGradients = (rand: () => number): readonly vector3d[] => {
  * @param rand - a random number generator
  * @returns a function which takes 3d coordinates and returns a pseudo-random 3d vector
  */
-/*@__INLINE__*/
+/*@__pure__*/
 const _permutationGenerator = (
 	rand: () => number
 ): ((x: number, y: number, z: number) => Readonly<vector3d>) => {
@@ -49,140 +42,6 @@ const _permutationGenerator = (
 	return (x: number, y: number, z: number) =>
 		_gradients[(pair3d(x, y, z) >> (x & 0x4)) & 0xff];
 };
-
-/* c8 ignore start */
-/**
- * _lightPermutationsGenerator
- *
- * Generates a (comparatively) memory efficient set of permutations
- *
- * @deprecated
- * @private
- * @param x - valid x input (+1)
- * @param y - valid y input (+1)
- * @param z - valid z input (+1)
- * @param random - a random number generating function
- * @returns function that takes numbers from the input ranges and returns a permuted gradient
- */
-const _lightPermutationsGenerator = (
-	x: number,
-	y: number,
-	z: number,
-	random: () => number
-): ((x: number, y: number, z: number) => vector3d) => {
-	// new Uint32Array(x + 1).map(
-	// 	(_, _index) => altHash(_index * 17 + 0xeb_c9) & 0xf_ff_ff
-	// );
-	const _xperms = generatePermutationArray(x + 1, random);
-	_xperms[_xperms.length - 1] = _xperms[0];
-
-	// const _yperms = new Uint32Array(y + 1).map(
-	// 	(_, _index) => altHash(_index * 31 + 0x1e_c1) & 0xf_ff_ff
-	// );
-	const _yperms = generatePermutationArray(y + 1, random);
-	_yperms[_yperms.length - 1] = _yperms[0];
-
-	// const _zperms = new Uint32Array(z + 1).map(
-	// 	(_, _index) => altHash(_index * 571 + 0xaf_1c_ab_62) & 0xf_ff_ff
-	// );
-	const _zperms = generatePermutationArray(z + 1, random);
-	_zperms[_zperms.length - 1] = _zperms[0];
-
-	return (x: number, y: number, z: number): vector3d =>
-		gradients3D[
-			// _hash(_xperms[x] + _yperms[y] + _zperms[z]) // works but is slow
-			// _mix(_xperms[x], _yperms[y], _zperms[z]) // also works, also slow
-			// Math.abs((_xperms[x]) ^ (_yperms[y]) ^ (_zperms[z] ) * 6967)
-			// (_xperms[x] ^ _yperms[y] ^ _zperms[z]) // pretty fast but causes distinct visual artificts
-			// ((_xperms[x] >> (y & 0xf)) ^ (_yperms[y] >> (z & 8)) ^ (_zperms[z] >> (x & 0xf)))  // doesn't loop but does work
-			// prettier-ignore
-			((_xperms[x] >> (_yperms[y] & 0x4)) ^
-			(_yperms[y] >> (_zperms[z] & 0x4)) ^
-			(_zperms[z] >> (_xperms[x] & 0x4))) %
-			gradients3D.length
-		];
-};
-/* c8 ignore stop */
-
-/* c8 ignore start */
-/**
- * _heavyPermutationsGenerator
- *
- * Generates a memory inefficient but fast function to return permutations
- *
- * @private
- * @deprecated
- * @param x - valid x input (+1)
- * @param y - valid y input (+1)
- * @param z - valid z input (+1)
- * @param rand - a function to generate random numbers
- * @returns function that takes numbers from the input ranges and returns a permuted gradient
- */
-const _heavyPermutationsGenerator = (
-	x: number,
-	y: number,
-	z: number,
-	rand: () => number
-): ((x: number, y: number, z: number) => vector3d) => {
-	const _special = _appendFirst(
-		Array.from({ length: x }).map(() =>
-			_appendFirst(
-				Array.from({ length: y }).map(() =>
-					_appendFirst(
-						Array.from({ length: z }).map(() => {
-							// fill with gradients
-							return gradients3D[
-								Math.trunc(rand() * gradients3D.length)
-							];
-						})
-					)
-				)
-			)
-		)
-	);
-
-	return (x: number, y: number, z: number) => _special[x][y][z];
-};
-
-/* c8 ignore stop*/
-
-/* c8 ignore start */
-
-/**
- * _permGenerator
- *
- * generates permutations
- *
- * @deprecated
- * @param x - value
- * @param y - value
- * @param z - value
- * @param rand - random number generator
- * @param forceLow - whether to force low memory mode
- * @param forceHigh - whether to force high memory mode
- * @returns a permutation generator
- */
-const _permGenerator = (
-	x: number,
-	y: number,
-	z: number,
-	rand: () => number,
-	forceLow = false,
-	forceHigh = false
-): ((x: number, y: number, z: number) => vector3d) => {
-	return _permutationGenerator(rand);
-	if (!forceHigh && (forceLow || x * y * z > 256 ** 3)) {
-		// too big to pregenerate
-		// faster startup (for the size) but slower runtime (about half as fast)
-		// space needed is O(x+y+z)
-		return _lightPermutationsGenerator(x, y, z, rand);
-	}
-	// small enough to pregenerate
-	// slower startup (for the same size) but much faster runtime (about twice as fast)
-	// space needed is O(x*y*z)
-	return _heavyPermutationsGenerator(x, y, z, rand);
-};
-/* c8 ignore stop */
 
 /**
  * Generates a 3D perlin noise function
@@ -279,13 +138,27 @@ export const perlinNoise3dFactory = (
 			/**  dot product of top right corner gradient and the vector to the input point from that corner */
 			_n111 = dotProduct3d(_g111, [_xFrac - 1, _yFrac - 1, _zFrac - 1]);
 
-		const _nx00 = interpolate(_n000, _n100, _xFade),
-			_nx01 = interpolate(_n001, _n101, _xFade),
-			_nx10 = interpolate(_n010, _n110, _xFade),
-			_nx11 = interpolate(_n011, _n111, _xFade),
-			_nxy0 = interpolate(_nx00, _nx10, _yFade),
-			_nxy1 = interpolate(_nx01, _nx11, _yFade),
-			_nxyz = interpolate(_nxy0, _nxy1, _zFade);
+		// const _nx00 = interpolate(_n000, _n100, _xFade),
+		// 	_nx01 = interpolate(_n001, _n101, _xFade),
+		// 	_nx10 = interpolate(_n010, _n110, _xFade),
+		// 	_nx11 = interpolate(_n011, _n111, _xFade),
+		// 	_nxy0 = interpolate(_nx00, _nx10, _yFade),
+		// 	_nxy1 = interpolate(_nx01, _nx11, _yFade),
+		// 	_nxyz = interpolate(_nxy0, _nxy1, _zFade);
+
+		const _nxyz = interpolate3d(
+			_n000,
+			_n010,
+			_n100,
+			_n110,
+			_n001,
+			_n011,
+			_n101,
+			_n111,
+			_xFade,
+			_yFade,
+			_zFade
+		);
 
 		// shift up and limit the max so instead of going to 1, it only goes to extremely slightly below 1
 		// without shift the output is [z.5, .5] and with shift and limit it's [0,1)
