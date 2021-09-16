@@ -25,6 +25,7 @@
 		"test": "ava test/**/*.spec.ts test/**/*.test.ts",
 		"coverage": "c8 --reporter lcov --reporter text --skip-full pnpm test",
 		"report": "c8 report --reporter lcovonly",
+		"ci": "c8 --reporter lcovonly pnpm test",
 		"doc": "lehre --template-path ./template.cjs -d src --write",
 		"alphaBump": "pnpm version prerelease --preid alpha --git-tag-version",
 		"benchmark": "pnpm node --loader=ts-node/esm --experimental-specifier-resolution=node --trace-warnings ./benchmarking/benchmark.ts"

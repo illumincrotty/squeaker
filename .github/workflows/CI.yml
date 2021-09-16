@@ -19,12 +19,10 @@ jobs:
                   key: ubuntu-latest-node-16-${{ hashFiles('**/pnpm-lock.yaml') }}
             - name: Install pnpm
               run: curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm@6
-            - name: pnpm Build
+            - name: Install pnpm dependenices
               run: pnpm install
             - name: Run Tests
-              run: pnpm run coverage
-            - name: Generate Report
-              run: pnpm run report
+              run: pnpm ci
             - name: Upload coverage to Codecov
               uses: codecov/codecov-action@v2
               with:
