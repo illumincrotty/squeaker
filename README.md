@@ -3,9 +3,11 @@
 <img src="https://i.imgur.com/HYEN9DZ.png" alt="logo" width="200"/>
 
 <!-- Shields -->
+
 ![npm](https://img.shields.io/npm/l/squeaker.svg)
 ![size-badge](https://img.badgesize.io/https:/unpkg.com/squeaker/dist/index.modern.js?compression=brotli)
 ![Types](https://badgen.net/npm/types/squeaker)
+[![codecov](https://codecov.io/gh/illumincrotty/squeaker/branch/main/graph/badge.svg?token=W17SYOVM6T)](https://codecov.io/gh/illumincrotty/squeaker)
 
 </div>
 
