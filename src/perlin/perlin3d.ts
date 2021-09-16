@@ -45,9 +45,9 @@ const _generateGradients = (rand: () => number): readonly vector3d[] => {
 const _permutationGenerator = (
 	rand: () => number
 ): ((x: number, y: number, z: number) => Readonly<vector3d>) => {
-	const gradients: readonly vector3d[] = _generateGradients(rand);
+	const _gradients: readonly vector3d[] = _generateGradients(rand);
 	return (x: number, y: number, z: number) =>
-		gradients[pair3d(x, y, z) & 0xff];
+		_gradients[(pair3d(x, y, z) >> (x & 0x4)) & 0xff];
 };
 
 /* c8 ignore start */

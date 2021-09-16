@@ -35,9 +35,6 @@ export const valueNoise2dFactory = (
 		...options,
 	});
 
-	_options.xSize = Math.ceil(_options.xSize);
-	_options.ySize = Math.ceil(_options.ySize);
-
 	const _perms = _permGenerator(_options.random);
 
 	const getX0 = _options.xSize
@@ -52,7 +49,7 @@ export const valueNoise2dFactory = (
 		? (_yFloor: number) => consistentModulus(_yFloor, _options.ySize)
 		: (_yFloor: number) => _yFloor;
 
-	const getY1 = _options.xSize
+	const getY1 = _options.ySize
 		? (_y0: number) => (_y0 + 1 >= _options.ySize ? 0 : _y0 + 1)
 		: (_y0: number) => _y0 + 1;
 

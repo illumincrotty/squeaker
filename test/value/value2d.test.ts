@@ -2,7 +2,11 @@ import test from 'ava';
 import { aleaFactory } from '../../src/random/randomIndex';
 import { valueNoise2dFactory as noiseGenerator } from '../../src/squeaker';
 
-import { flatGridGenerator, rangeGenerator } from '../../src/util';
+import {
+	flatGridGenerator,
+	rangeGenerator,
+	getRandomLargePrime,
+} from '../../src/util';
 
 const _testing = (_parameter: {
 	xSize: number;
@@ -129,8 +133,8 @@ test('Respects ranges', (t) => {
 	});
 
 	t.is(
-		noise(0.286, 0.286).toPrecision(15),
-		noise(10.286, 10.286).toPrecision(15),
+		noise(0.286, 0.286).toPrecision(10),
+		noise(10.286, 10.286).toPrecision(10),
 		'specific case'
 	);
 
@@ -139,8 +143,8 @@ test('Respects ranges', (t) => {
 		randY = random() * 10;
 
 	t.is(
-		noise(randX, randY).toPrecision(15),
-		noise(10 + randX, 10 + randY).toPrecision(15),
+		noise(randX, randY).toPrecision(10),
+		noise(10 + randX, 10 + randY).toPrecision(10),
 		'random case'
 	);
 });
@@ -176,6 +180,23 @@ test('respects range in the negative', (t) => {
 		noise(randX, randY).toPrecision(15),
 		noise(10 + randX, 10 + randY).toPrecision(15),
 		'random case'
+	);
+});
+
+test('Range at cusps', (t) => {
+	const xRange = 10,
+		yRange = 10;
+	const noise = noiseGenerator({ xSize: xRange, ySize: yRange });
+	t.is(noise(-0.5, -0.5), noise(xRange - 0.5, yRange - 0.5));
+});
+
+test('unbounded range', (t) => {
+	const noise = noiseGenerator({ xSize: 0, ySize: 0 });
+	t.notThrows(() =>
+		noise(
+			getRandomLargePrime(Math.random),
+			getRandomLargePrime(Math.random)
+		)
 	);
 });
 

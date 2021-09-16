@@ -107,7 +107,7 @@ const _permutationGenerator = (
 	const _primeMultiplier = getRandomLargePrime(rand);
 	const _scale = Math.SQRT1_2;
 	const _size = 0xf_ff;
-	const _primes: vector2d[] = shuffle(largePrimes, Math.random)
+	const _primes: vector2d[] = shuffle(largePrimes, rand)
 		.slice(0, _size + 1)
 		.map((prime) => [
 			Math.cos(prime % (Math.PI * 2)) * _scale,

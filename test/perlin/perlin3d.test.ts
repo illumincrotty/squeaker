@@ -1,6 +1,7 @@
 import test from 'ava';
 import { aleaFactory } from '../../src/random/alea';
-import { perlinNoise3dFactory } from '../../src/squeaker';
+import { perlinNoise3dFactory, randomFactory } from '../../src/squeaker';
+import { getRandomLargePrime } from '../../src/util';
 
 const noiseData: number[][][] = [];
 const generalNoiseGenerator = perlinNoise3dFactory();
@@ -49,5 +50,49 @@ test('seed not random', (t) => {
 			seed: 6_237_892,
 		})(0, 0, 0),
 		0.5
+	);
+});
+test('respects ranges', (t) => {
+	const random = randomFactory('testing key');
+
+	const [xRange, yRange, zRange] = [
+		Math.floor(1000 * random.random()),
+		Math.floor(1000 * random.random()),
+		Math.floor(1000 * random.random()),
+	];
+	const noise = perlinNoise3dFactory({
+		xSize: xRange,
+		ySize: yRange,
+		zSize: zRange,
+		random: random.random,
+	});
+	const noiseNoBounds = perlinNoise3dFactory({
+		random: random.random,
+	});
+
+	const x = xRange * random.random(),
+		y = yRange * random.random(),
+		z = zRange * random.random(),
+		shift = getRandomLargePrime(random.random);
+
+	t.is(
+		noise(shift + x, shift + y, shift + z),
+		noise((shift + x) % xRange, (shift + y) % yRange, (shift + z) % zRange),
+		'large random positions'
+	);
+	t.is(noise(0, 0, 0), noise(xRange, yRange, zRange), 'Cusp before');
+	t.is(
+		noise(-0.5, -0.5, -0.5),
+		noise(xRange - 0.5, yRange - 0.5, zRange - 0.5),
+		'Cusp after'
+	);
+	t.not(
+		noiseNoBounds(shift + x, shift + y, shift + z),
+		noiseNoBounds(
+			(shift + x) % xRange,
+			(shift + y) % yRange,
+			(shift + z) % zRange
+		),
+		'No bounds'
 	);
 });
