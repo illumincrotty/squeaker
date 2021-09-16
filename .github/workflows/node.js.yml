@@ -1,0 +1,38 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 16
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
+    - name: Cache .pnpm-store
+      uses: actions/cache@v1
+      with:
+        path: ~/.pnpm-store
+        key: ${{ runner.os }}-node${{ matrix.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Install pnpm
+      run: curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm@6
+    - name: pnpm Build
+      run: pnpm instal
+    - name: Test ${{ matrix.node-version }}
+      run: npm run coverage
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        files: coverage/lcov.info
+        env_vars: OS,NODE
+        name: codecov-umbrella
+        fail_ci_if_error: true
+        verbose: true
