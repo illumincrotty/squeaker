@@ -9,7 +9,6 @@ import {
 } from '../src/squeaker';
 import { rect } from './demoUtil';
 import type { interpolation, messageData } from './workerTypes';
-
 let noiseMachine: [width: number, height: number, rand: noiseFunction3d] = [
 	500,
 	500,
@@ -37,7 +36,7 @@ const interpolationSwitch = (_functionName: interpolation = 'hermite') => {
 
 const messageToConstructor = (
 	constructor: messageData['constructor']
-): perlinNoiseOptions3d => {
+): Partial<perlinNoiseOptions3d> => {
 	if (!constructor) {
 		constructor = {
 			canvasHeight: 500,
@@ -51,9 +50,9 @@ const messageToConstructor = (
 		};
 	}
 	return {
-		xSize: 0, //constructor.xSize ?? 10,
-		ySize: 0, //constructor.ySize ?? 10,
-		zSize: 0, //constructor.zSize ?? 10,
+		xSize: constructor.xSize,
+		ySize: constructor.ySize,
+		zSize: constructor.zSize,
 		blendFunction: interpolationSwitch(constructor.interpolation),
 	};
 };
@@ -73,7 +72,7 @@ self.addEventListener('message', (message): void => {
 	}
 });
 const resolution = 2,
-	scale = 10;
+	scale = 20;
 const update = (frame: number): ImageData => {
 	const [width, height, rand] = noiseMachine;
 

@@ -1,17 +1,16 @@
-import { perlinNoise1dFactory } from '../src/perlin/perlin1d';
-import { aleaFactory } from '../src/random/randomIndex';
-import { perlinNoise2dFactory } from '../src/squeaker';
+import {
+	perlinNoise2dFactory,
+	perlinNoise1dFactory,
+	randomFactory,
+} from '../src/squeaker';
 import { draw1d, draw2d } from './demoUtil';
-
-const alea = aleaFactory('hello fresh'),
-	initialState = alea.exportState();
 
 export const drawPerlin1d = async (
 	canvasElement: HTMLCanvasElement
 ): Promise<void> => {
 	const scale = 100;
 	const noise = perlinNoise1dFactory({
-		random: aleaFactory('98iks').random,
+		random: randomFactory('98iks').random,
 		xSize: canvasElement.width / scale,
 	});
 
@@ -23,12 +22,9 @@ export const drawPerlin1d = async (
 export const drawPerlin2d = async (
 	canvasElement: HTMLCanvasElement
 ): Promise<void> => {
-	// reset random
-	alea.importState(initialState);
-
 	const scale = 20;
 	const noise = perlinNoise2dFactory({
-		random: aleaFactory('plaigerism').random,
+		random: randomFactory('plaigerism').random,
 		// xSize: canvasElement.width / scale,
 		// ySize: canvasElement.height / scale,
 	});
@@ -47,7 +43,7 @@ export const drawPerlin2dTile = async (
 ): Promise<void> => {
 	const scale = 20;
 	const noise = perlinNoise2dFactory({
-		random: aleaFactory('67uyjh n,').random,
+		random: randomFactory('67uyjh n,').random,
 		xSize: canvasElement.width / (scale * xTiles),
 		ySize: canvasElement.height / (scale * yTiles),
 	});

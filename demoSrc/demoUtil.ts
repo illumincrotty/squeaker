@@ -1,3 +1,27 @@
+/*__PURE__*/
+/*__INLINE__*/
+export const solidCanvasFill = (
+	canvas: HTMLCanvasElement,
+	fill: CanvasRenderingContext2D['fillStyle'] = 'gray'
+): void => {
+	const _context = canvas.getContext('2d');
+	if (_context) {
+		_context.fillStyle = fill;
+		_context.fillRect(0, 0, canvas.width, canvas.height);
+	}
+};
+
+/*__PURE__*/
+/*__INLINE__*/
+export const drawCanvasPlaceholders = (
+	canvasArray: HTMLCanvasElement[]
+): void => canvasArray.forEach((canvas) => solidCanvasFill(canvas));
+
+/*__PURE__*/
+/*__INLINE__*/
+export const getCanvasFromID = (element: string): HTMLCanvasElement =>
+	document.querySelector(`#${element}`) as HTMLCanvasElement;
+
 /**
  * "Draws" a rectangle to a uint8 representation of a canvas. This is an inplace operation
  *
@@ -10,6 +34,7 @@
  * @param arrayWidth - the width of the canvas
  * @returns the array with the modification, useful for chaining
  */
+/*__PURE__*/
 export const rect = (
 	x: number,
 	y: number,
@@ -34,26 +59,16 @@ export const rect = (
 	return colorArray;
 };
 
-const solidCanvasFill = (
-	canvas: HTMLCanvasElement,
-	fill: CanvasRenderingContext2D['fillStyle'] = 'gray'
-) => {
-	const _context = canvas.getContext('2d');
-	if (_context) {
-		_context.fillStyle = fill;
-		_context.fillRect(0, 0, canvas.width, canvas.height);
-	}
-};
-
-export const drawCanvasPlaceholders = (
-	canvasArray: HTMLCanvasElement[]
-): void => canvasArray.forEach((canvas) => solidCanvasFill(canvas));
-
 type colorType = [r: number, g: number, b: number];
 type colorTypeAlpha = [r: number, g: number, b: number, a: number];
 
+/*__PURE__*/
+/*__INLINE__*/
 const rgbify = (color: colorType) =>
 	`rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+
+/*__PURE__*/
+/*__INLINE__*/
 const rgbaify = (colorArray: colorTypeAlpha) =>
 	`rgba(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]}, ${colorArray[3]})`;
 
@@ -70,6 +85,7 @@ const white: colorType = [239, 245, 239],
  * @param horizontals - include horizontal bars
  * @returns a promise that resolves upon completion
  */
+/*__PURE__*/
 export const draw1d = async (
 	canvasElement: HTMLCanvasElement,
 	generator: (x: number) => number,
@@ -131,6 +147,7 @@ export const draw1d = async (
 	return Promise.resolve();
 };
 
+/*__PURE__*/
 export const draw2d = async (
 	canvasElement: HTMLCanvasElement,
 	generator: (x: number, y: number) => number,

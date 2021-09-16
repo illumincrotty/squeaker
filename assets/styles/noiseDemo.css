@@ -5,7 +5,34 @@ figure {
 	display: block;
 	position: relative;
 	width: min(100%, 30rem);
+	text-align: center;
+}
+section {
 	margin-left: auto;
 	margin-right: auto;
-	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+a {
+	color: var(--text, revert);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+
+	flex: 2 3 10%;
+}
+
+.row > * {
+	max-width: calc(40 / var(--child-count, 2) * 1rem);
+	/* width: min-content; */
 }

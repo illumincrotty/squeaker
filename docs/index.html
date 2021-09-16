@@ -50,8 +50,8 @@
 				rel="stylesheet"
 				href="https://cdn.jsdelivr.net/npm/modern-normalize@1.1.0/modern-normalize.min.css"
 		/></noscript>
-	  <script type="module" crossorigin src="/squeaker/assets/index.5a2d156a.js"></script>
-    <link rel="stylesheet" href="/squeaker/assets/index.421cade5.css">
+	  <script type="module" crossorigin src="/squeaker/assets/index.6d4c0aea.js"></script>
+    <link rel="stylesheet" href="/squeaker/assets/index.8d7f7900.css">
   </head>
 
 	<body>
@@ -63,7 +63,11 @@
 		<div class="stack" id="content" style="--gap: 1rem">
 			<section>
 				<section>
-					<h3>Gradient Noise (aka Perlin noise)</h3>
+					<h3>
+						<a href="https://en.wikipedia.org/wiki/Perlin_noise"
+							>Perlin Noise</a
+						>
+					</h3>
 					<figure>
 						<canvas
 							width="1000"
@@ -72,83 +76,117 @@
 						></canvas>
 						<figcaption>1D Perlin Noise</figcaption>
 					</figure>
-					<figure>
-						<canvas width="500" height="500" id="perlin2d"></canvas>
-						<figcaption>2D Perlin Noise</figcaption>
-					</figure>
-					<figure>
-						<canvas
-							width="500"
-							height="500"
-							id="perlin2dTile"
-						></canvas>
-						<figcaption>2D Perlin Noise Tiling</figcaption>
-					</figure>
-					<figure>
-						<canvas
-							width="500"
-							height="500"
-							id="perlin3dHeavy"
-						></canvas>
-						<figcaption>2D slices of 3d Perlin Noise</figcaption>
-					</figure>
-
-					<figure>
-						<canvas
-							width="500"
-							height="500"
-							id="perlin3dLight"
-						></canvas>
-						<figcaption>
-							2D slices of 3D Perlin Noise w/ improved scaling
-						</figcaption>
-					</figure>
+					<div class="row">
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="perlin2d"
+							></canvas>
+							<figcaption>2D Perlin Noise</figcaption>
+						</figure>
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="perlin2dTile"
+							></canvas>
+							<figcaption>Tiling 2D Perlin Noise</figcaption>
+						</figure>
+					</div>
+					<div class="row">
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="perlin3d"
+							></canvas>
+							<figcaption>
+								2D slices of 3d Perlin Noise
+							</figcaption>
+						</figure>
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="perlin3dTile"
+							></canvas>
+							<figcaption>
+								2D slices of Tiling 3D Perlin Noise
+							</figcaption>
+						</figure>
+					</div>
 				</section>
-				<section>
-					<h3>Value Noise</h3>
+				<section id="value-noise">
+					<h3>
+						<a href="https://en.wikipedia.org/wiki/Value_noise"
+							>Value Noise</a
+						>
+					</h3>
 					<figure>
 						<canvas width="1000" height="500" id="value1d"></canvas>
 						<figcaption>1D Value Noise</figcaption>
 					</figure>
-					<figure>
-						<canvas width="500" height="500" id="value2d"></canvas>
-						<figcaption>2D Value Noise</figcaption>
-					</figure>
+					<div class="row">
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="value2d"
+							></canvas>
+							<figcaption>2D Value Noise</figcaption>
+						</figure>
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="value2dTile"
+							></canvas>
+							<figcaption>Tiling 2D Value Noise</figcaption>
+						</figure>
+					</div>
 				</section>
-				<section>
-					<h3>Interpolation functions</h3>
-					<figure>
-						<canvas
-							width="500"
-							height="500"
-							id="interpolationLinear"
-						></canvas>
-						<figcaption>Linear Interpolation</figcaption>
-					</figure>
-					<figure>
-						<canvas
-							width="500"
-							height="500"
-							id="interpolationHermite"
-						></canvas>
-						<figcaption>Hermitic Interpolation</figcaption>
-					</figure>
-					<figure>
-						<canvas
-							width="500"
-							height="500"
-							id="interpolationQuintic"
-						></canvas>
-						<figcaption>Quintic Interpolation</figcaption>
-					</figure>
-					<figure>
-						<canvas
-							width="500"
-							height="500"
-							id="interpolationTrig"
-						></canvas>
-						<figcaption>Trigonometric Interpolation</figcaption>
-					</figure>
+				<section id="interpolation">
+					<h3>
+						<a href="https://en.wikipedia.org/wiki/Interpolation"
+							>Interpolation Functions</a
+						>
+					</h3>
+					<div class="row" style="--child-count: 4">
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="interpolationLinear"
+							></canvas>
+							<figcaption>Linear Interpolation</figcaption>
+						</figure>
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="interpolationHermite"
+							></canvas>
+							<figcaption>Hermitic Interpolation</figcaption>
+						</figure>
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="interpolationQuintic"
+							></canvas>
+							<figcaption>Quintic Interpolation</figcaption>
+						</figure>
+
+						<figure>
+							<canvas
+								width="500"
+								height="500"
+								id="interpolationTrig"
+							></canvas>
+							<figcaption>Trigonometric Interpolation</figcaption>
+						</figure>
+					</div>
 				</section>
 			</section>
 		</div>

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable jsdoc/no-types */
 
+import autoprefixer from 'autoprefixer';
+
 /**
  * Creates Vite config
  *
@@ -18,6 +20,7 @@ const config = (environment) => {
 	const configSet = {
 		css: {
 			modules: false,
+			postcss: { plugins: [autoprefixer] },
 		},
 		base: '/squeaker/',
 		build: {
