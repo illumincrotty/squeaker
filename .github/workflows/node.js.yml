@@ -25,8 +25,8 @@ jobs:
     - name: Install pnpm
       run: curl -f https://get.pnpm.io/v6.14.js | node - add --global pnpm@6
     - name: pnpm Build
-      run: pnpm instal
-    - name: Test ${{ matrix.node-version }}
+      run: pnpm install
+    - name: Test 16
       run: npm run coverage
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
