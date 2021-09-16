@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-magic-numbers */
 import test from 'ava';
-import type { vector2d } from '../src/noiseTypes';
-import { cantorPairing, szudzikPair, rosenbergStrongPair } from '../src/util';
-import {
-	generatePermutationArray,
-	primeGenerator,
-	_appendFirst,
-} from '../src/util';
+import type { vector2d } from '../../src/noiseTypes';
 import {
 	altHash,
+	cantorPairing,
 	dotProduct2d,
 	flatGridGenerator,
+	generatePermutationArray,
 	hash,
+	primeGenerator,
 	range,
 	rangeGenerator,
+	rosenbergStrongPair,
 	shuffle,
-} from '../src/util';
+	szudzikPair,
+	_appendFirst,
+} from '../../src/util';
 
 test('includes minimum excludes maximum', (t) => {
 	const testing = range(0, 1);
@@ -186,7 +186,7 @@ test('Generation of permutation array', (t) => {
 });
 
 test('Primes', (t) => {
-	t.deepEqual(
+	t.is(
 		primeGenerator(120_000)[10_000 - 1],
 		104_729,
 		'10,000th prime is correct'
@@ -200,11 +200,11 @@ test('_appendFirst', (t) => {
 const xyPair = function* <t>(
 	x: number,
 	y: number,
-	func: (x: number, y: number) => t
+	function_: (x: number, y: number) => t
 ) {
 	for (let xIndex = 0; xIndex < x; xIndex++) {
 		for (let yIndex = 0; yIndex < y; yIndex++) {
-			yield func(xIndex, yIndex);
+			yield function_(xIndex, yIndex);
 		}
 	}
 };

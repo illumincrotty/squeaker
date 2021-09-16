@@ -28,10 +28,11 @@ jobs:
       run: pnpm install
     - name: Test Node 16
       run: pnpm run coverage
+      run: pnpm run report
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v2
       with:
-        files: coverage/clover.xml
+        files: coverage/lcov.info
         env_vars: OS,NODE
         name: codecov-umbrella
         fail_ci_if_error: true

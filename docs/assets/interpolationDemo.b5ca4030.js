@@ -1,0 +1,1 @@
+import{n as s,h as n,o as a,q as o}from"./perlinConstants.6b98d269.js";import{d as t}from"./index.d252ef4e.js";const r=async n=>i(n,s),c=async s=>i(s,n),e=async s=>i(s,a),d=async s=>i(s,o),i=async(s,n)=>{const a=s.width;return t(s,(s=>n(s/a)),0)};export{c as drawHermite,i as drawInterpolation,r as drawLinear,e as drawQuintic,d as drawTrig};
