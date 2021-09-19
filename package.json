@@ -22,7 +22,7 @@
 		"lint:fix": "eslint src --fix --ext .ts",
 		"build": "pnpm test && pnpm build:noTest",
 		"build:noTest": "microbundle --tsconfig .\\tsconfig-build.json",
-		"test": "ava test/**/*.spec.ts test/**/*.test.ts",
+		"test": "ava",
 		"coverage": "c8 --reporter lcov --reporter text --skip-full pnpm test",
 		"report": "c8 report --reporter lcovonly",
 		"ci": "c8 --reporter lcovonly pnpm test",
@@ -50,13 +50,13 @@
 		"simplex"
 	],
 	"devDependencies": {
-		"@types/node": "^16.9.1",
+		"@types/node": "^16.9.4",
 		"@types/pngjs": "^6.0.1",
 		"@typescript-eslint/eslint-plugin": "^4.31.1",
 		"@typescript-eslint/parser": "^4.31.1",
 		"asm-noise": "^1.0.2",
 		"autoprefixer": "^10.3.4",
-		"ava": "^3.15.0",
+		"ava": "^4.0.0-alpha.2",
 		"benny": "^3.6.15",
 		"c8": "^7.9.0",
 		"eslint": "^7.32.0",
@@ -72,14 +72,16 @@
 		"source-map-support": "^0.5.20",
 		"ts-node": "^10.2.1",
 		"typescript": "^4.4.3",
-		"vite": "^2.5.7"
+		"vite": "^2.5.10"
 	},
 	"ava": {
+		"files": [
+			"test/**/*.test.ts",
+			"!test/util.ts"
+		],
+		"failFast": false,
 		"extensions": {
 			"ts": "module"
-		},
-		"nonSemVerExperiments": {
-			"configurableModuleFormat": true
 		},
 		"nodeArguments": [
 			"--loader=ts-node/esm",
