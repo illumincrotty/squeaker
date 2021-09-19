@@ -37,9 +37,9 @@ const messageToConstructor = (
 		constructor = {
 			canvasHeight: 500,
 			canvaswidth: 500,
-			xSize: 256,
-			ySize: 256,
-			zSize: 256,
+			xSize: 0,
+			ySize: 0,
+			zSize: 0,
 			interpolation: 'hermite',
 			forceHigh: false,
 			forceLow: false,
@@ -80,7 +80,7 @@ const update = (frame: number): ImageData => {
 				rand(
 					x / scale + frame / 75,
 					y / scale + frame / 100,
-					frame / 75
+					frame / 50
 				) * 0xff
 			);
 			rect(x, y, resolution, resolution, color, colorArray);

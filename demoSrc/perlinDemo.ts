@@ -1,11 +1,26 @@
 import {
-	perlinNoise2dFactory,
 	perlinNoise1dFactory,
+	perlinNoise2dFactory,
 	randomFactory,
 } from '../src/squeaker';
-import { draw1d, draw2d } from './demoUtil';
+import { draw1d, draw2d, getCanvasFromID } from './demoUtil';
+// const sourcePromise = (async () => import('../src/squeaker'))();
 
-export const drawPerlin1d = async (
+export const main = (): void => {
+	window.requestIdleCallback(() => {
+		void drawPerlin1d(getCanvasFromID('perlin1d'));
+		void drawPerlin2d(getCanvasFromID('perlin2d'));
+		void drawPerlin2dTile(getCanvasFromID('perlin2dTile'));
+	});
+	// requestIdleCallback(() => {
+
+	// });
+	// requestIdleCallback(() => {});
+
+	// return done;
+};
+
+const drawPerlin1d = async (
 	canvasElement: HTMLCanvasElement
 ): Promise<void> => {
 	const scale = 100;
@@ -19,9 +34,7 @@ export const drawPerlin1d = async (
 	});
 };
 
-export const drawPerlin2d = async (
-	canvasElement: HTMLCanvasElement
-): Promise<void> => {
+const drawPerlin2d = async (canvasElement: HTMLCanvasElement) => {
 	const scale = 20;
 	const noise = perlinNoise2dFactory({
 		random: randomFactory('plaigerism').random,
@@ -36,11 +49,11 @@ export const drawPerlin2d = async (
 	);
 };
 
-export const drawPerlin2dTile = async (
+const drawPerlin2dTile = async (
 	canvasElement: HTMLCanvasElement,
 	xTiles = 5,
 	yTiles = 5
-): Promise<void> => {
+) => {
 	const scale = 20;
 	const noise = perlinNoise2dFactory({
 		random: randomFactory('67uyjh n,').random,
@@ -48,32 +61,11 @@ export const drawPerlin2dTile = async (
 		ySize: canvasElement.height / (scale * yTiles),
 	});
 
-	await draw2d(
+	return draw2d(
 		canvasElement,
 		(x: number, y: number) => noise(x / scale, y / scale),
-		1
+		1,
+		(input) => input,
+		[xTiles, yTiles]
 	);
-	const context = canvasElement.getContext('2d');
-	if (context && (xTiles > 1 || yTiles > 1)) {
-		context.fillStyle = 'rgba(256, 0, 0, .3)';
-		{
-			const xStep = canvasElement.width / xTiles;
-			for (let xIndex = 1; xIndex < xTiles; xIndex++) {
-				context.fillRect(
-					xStep * xIndex - 1,
-					0,
-					2,
-					canvasElement.height
-				);
-			}
-		}
-		{
-			const yStep = canvasElement.height / yTiles;
-			for (let yIndex = 1; yIndex < yTiles; yIndex++) {
-				context.fillRect(0, yStep * yIndex - 1, canvasElement.width, 2);
-			}
-		}
-	}
-
-	return Promise.resolve();
 };

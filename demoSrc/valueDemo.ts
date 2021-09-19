@@ -1,4 +1,4 @@
-import { draw1d, draw2d } from './demoUtil';
+import { draw1d, draw2d, getCanvasFromID } from './demoUtil';
 import {
 	valueNoise1dFactory,
 	valueNoise2dFactory,
@@ -8,7 +8,15 @@ import {
 const alea = randomFactory('offer code elbows');
 const initialState = alea.exportState();
 
-export const drawValue1d = async (
+export const main = (): void => {
+	window.requestIdleCallback(() => {
+		void drawValue1d(getCanvasFromID('value1d'));
+		void drawValue2d(getCanvasFromID('value2d'));
+		void drawValue2dTile(getCanvasFromID('value2dTile'));
+	});
+};
+
+const drawValue1d = async (
 	canvasElement: Readonly<HTMLCanvasElement>
 ): Promise<void> => {
 	// reset random
@@ -23,9 +31,7 @@ export const drawValue1d = async (
 	return draw1d(canvasElement, (x: number) => noise(x / scale));
 };
 
-export const drawValue2d = async (
-	canvasElement: HTMLCanvasElement
-): Promise<void> => {
+const drawValue2d = async (canvasElement: HTMLCanvasElement) => {
 	// reset random
 	alea.importState(initialState);
 
@@ -42,11 +48,11 @@ export const drawValue2d = async (
 	);
 };
 
-export const drawValue2dTile = async (
+const drawValue2dTile = async (
 	canvasElement: HTMLCanvasElement,
 	xTiles = 5,
 	yTiles = 5
-): Promise<void> => {
+) => {
 	const scale = 10;
 	const noise = valueNoise2dFactory({
 		random: alea.random,
@@ -54,32 +60,34 @@ export const drawValue2dTile = async (
 		ySize: canvasElement.height / (scale * yTiles),
 	});
 
-	await draw2d(
+	return draw2d(
 		canvasElement,
 		(x: number, y: number) => noise(x / scale, y / scale),
-		1
+		1,
+		(input) => input,
+		[xTiles, yTiles]
 	);
-	const context = canvasElement.getContext('2d');
-	if (context && (xTiles > 1 || yTiles > 1)) {
-		context.fillStyle = 'rgba(256, 0, 0, .3)';
-		{
-			const xStep = canvasElement.width / xTiles;
-			for (let xIndex = 1; xIndex < xTiles; xIndex++) {
-				context.fillRect(
-					xStep * xIndex - 1,
-					0,
-					2,
-					canvasElement.height
-				);
-			}
-		}
-		{
-			const yStep = canvasElement.height / yTiles;
-			for (let yIndex = 1; yIndex < yTiles; yIndex++) {
-				context.fillRect(0, yStep * yIndex - 1, canvasElement.width, 2);
-			}
-		}
-	}
+	// const context = canvasElement.getContext('2d');
+	// if (context && (xTiles > 1 || yTiles > 1)) {
+	// 	context.fillStyle = 'rgba(256, 0, 0, .3)';
+	// 	{
+	// 		const xStep = canvasElement.width / xTiles;
+	// 		for (let xIndex = 1; xIndex < xTiles; xIndex++) {
+	// 			context.fillRect(
+	// 				xStep * xIndex - 1,
+	// 				0,
+	// 				2,
+	// 				canvasElement.height
+	// 			);
+	// 		}
+	// 	}
+	// 	{
+	// 		const yStep = canvasElement.height / yTiles;
+	// 		for (let yIndex = 1; yIndex < yTiles; yIndex++) {
+	// 			context.fillRect(0, yStep * yIndex - 1, canvasElement.width, 2);
+	// 		}
+	// 	}
+	// }
 
-	return Promise.resolve();
+	// return Promise.resolve();
 };

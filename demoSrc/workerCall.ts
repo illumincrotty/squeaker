@@ -1,61 +1,52 @@
 import { getCanvasFromID } from './demoUtil';
 import type { messageData } from './workerTypes';
+import perlinWorker from './perlinNoiseWorker?worker';
+import valueWorker from './valueNoiseWorker?worker';
 
-export const animate = async (): Promise<void> => {
-	// eslint-disable-next-line promise/prefer-await-to-then
-	const [perlinWorker, valueWorker] = (
-		await Promise.all([
-			import('./perlinNoiseWorker?worker'),
-			import('./valueNoiseWorker?worker'),
-		])
-	).map((worker) => worker.default);
-	const createWorker = (
-		canvasElement: HTMLCanvasElement,
-		constructorMessage: messageData['constructor'],
-		WorkerConstructor:
-			| typeof perlinWorker
-			| typeof valueWorker = perlinWorker
-	) => {
-		const worker = new WorkerConstructor();
-		const context = canvasElement.getContext('2d');
-		let frame = 0;
-		if (context) {
-			const imageQueue: ImageBitmap[] = [];
-			// const imageQueue: ImageData[] = [];
+const createWorker = (
+	canvasElement: HTMLCanvasElement,
+	constructorMessage: messageData['constructor'],
+	WorkerConstructor: {
+		new (): Worker;
+	},
+	live: () => boolean = () => true
+) => {
+	const worker = new WorkerConstructor();
+	const context = canvasElement.getContext('2d');
+	let frame = 0;
+	if (context) {
+		const imageQueue: ImageBitmap[] = [];
+		// const imageQueue: ImageData[] = [];
 
-			const setup = async () => {
-				context.fillStyle = 'grey';
-				context.fillRect(
-					0,
-					0,
-					canvasElement.width,
-					canvasElement.height
+		const setup = async () => {
+			context.fillStyle = 'grey';
+			context.fillRect(0, 0, canvasElement.width, canvasElement.height);
+			const append = async (pic: ImageData) => {
+				return Promise.resolve(
+					imageQueue.push(await createImageBitmap(pic))
 				);
-				const append = async (pic: ImageData) => {
-					return Promise.resolve(
-						imageQueue.push(await createImageBitmap(pic))
-					);
-				};
-
-				worker.addEventListener('message', (message) => {
-					void append(message.data);
-				});
-
-				worker.postMessage({
-					constructor: constructorMessage,
-				} as messageData);
-				return Promise.resolve();
 			};
 
-			void setup();
-			const request = (requestFrame: number) => {
-				worker.postMessage({
-					update: { frame: requestFrame },
-				} as messageData);
-				frame++;
-			};
+			worker.addEventListener('message', (message) => {
+				void append(message.data);
+			});
 
-			return async (grid = false) => {
+			worker.postMessage({
+				constructor: constructorMessage,
+			} as messageData);
+			return Promise.resolve();
+		};
+
+		void setup();
+		const request = (requestFrame: number) => {
+			worker.postMessage({
+				update: { frame: requestFrame },
+			} as messageData);
+			frame++;
+		};
+
+		return async (grid = false) => {
+			if (live()) {
 				if (imageQueue.length < 5) {
 					request(frame);
 					request(frame);
@@ -89,80 +80,141 @@ export const animate = async (): Promise<void> => {
 						}
 					}
 				}
-				return Promise.resolve();
-			};
-		}
-
-		return () => {
-			console.log('invalid canvas context');
+			}
+			return Promise.resolve();
 		};
+	}
+
+	return () => {
+		console.log('invalid canvas context');
 	};
+};
 
-	const workerPerlin3d = createWorker(getCanvasFromID('perlin3d'), {
-		canvasHeight: 500,
-		canvaswidth: 500,
-		seed: 563_729_047,
-		forceHigh: true,
-		interpolation: 'hermite',
-	});
-	const workerPerlin3dTile = createWorker(getCanvasFromID('perlin3dTile'), {
-		canvasHeight: 500,
-		canvaswidth: 500,
-		seed: 563_759_047,
-		xSize: 5,
-		ySize: 5,
-		forceLow: true,
-		interpolation: 'hermite',
-	});
+export const main = (): void => {
+	// const [perlinWorkerPromise, valueWorkerPromise] = [
+	// 	import('./perlinNoiseWorker?worker'),
+	// 	import('./valueNoiseWorker?worker'),
+	// ];
 
-	const workerValue3d = createWorker(
-		getCanvasFromID('value3d'),
-		{
-			canvasHeight: 500,
-			canvaswidth: 500,
-			seed: 563_729_047,
-			forceHigh: true,
-			interpolation: 'hermite',
+	// const perlinWorker = (await perlinWorkerPromise).default;
+
+	const p3d = getCanvasFromID('perlin3d'),
+		p3dTile = getCanvasFromID('perlin3dTile'),
+		p3dParent = p3d.parentElement as HTMLElement,
+		v3d = getCanvasFromID('value3d'),
+		v3dTile = getCanvasFromID('value3dTile'),
+		v3dParent = v3d.parentElement as HTMLElement;
+
+	let perlinAnimate = true,
+		valueAnimate = true;
+	const animationObserver = new IntersectionObserver(
+		(entries) => {
+			entries.forEach((element) => {
+				switch (element.target) {
+					case p3dParent: {
+						perlinAnimate = element.isIntersecting;
+						// console.log(
+						// 	`Perlin animation: ${perlinAnimate ? 'on' : 'off'}`
+						// );
+						break;
+					}
+					case v3dParent: {
+						valueAnimate = element.isIntersecting;
+						break;
+					}
+					default: {
+						break;
+					}
+				}
+			});
 		},
-		valueWorker
-	);
-	const workerValue3dTile = createWorker(
-		getCanvasFromID('value3dTile'),
-		{
-			canvasHeight: 500,
-			canvaswidth: 500,
-			seed: 563_759_047,
-			xSize: 5,
-			ySize: 5,
-			forceLow: true,
-			interpolation: 'hermite',
-		},
-		valueWorker
+		{ threshold: [0] }
 	);
 
-	let frame = 0;
+	animationObserver.observe(p3dParent);
+	animationObserver.observe(v3dParent);
 
-	const update = () => {
-		frame += 1;
+	window.requestIdleCallback(() => {
+		const workerPerlin3d = createWorker(
+			p3d,
+			{
+				canvasHeight: 500,
+				canvaswidth: 500,
+				seed: 563_729_047,
+				forceHigh: true,
+				interpolation: 'hermite',
+			},
+			perlinWorker,
+			() => perlinAnimate
+		);
+		const workerPerlin3dTile = createWorker(
+			p3dTile,
+			{
+				canvasHeight: 500,
+				canvaswidth: 500,
+				seed: 563_759_047,
+				xSize: 5,
+				ySize: 5,
+				forceLow: true,
+				interpolation: 'hermite',
+			},
+			perlinWorker,
+			() => perlinAnimate
+		);
 
-		switch (frame % 2) {
-			case 0: {
-				void workerPerlin3d();
-				void workerValue3d();
-				break;
-			}
-			case 1: {
-				void workerPerlin3dTile(true);
-				void workerValue3dTile(true);
-				break;
-			}
-			default:
-				break;
-		}
+		// const valueWorker = (await valueWorkerPromise).default;
+		setTimeout(() => {
+			const workerValue3d = createWorker(
+				v3d,
+				{
+					canvasHeight: 500,
+					canvaswidth: 500,
+					seed: 563_729_047,
+					forceHigh: true,
+					interpolation: 'hermite',
+				},
+				valueWorker,
+				() => valueAnimate
+			);
+			const workerValue3dTile = createWorker(
+				v3dTile,
+				{
+					canvasHeight: 500,
+					canvaswidth: 500,
+					seed: 563_759_047,
+					xSize: 5,
+					ySize: 5,
+					forceLow: true,
+					interpolation: 'hermite',
+				},
+				valueWorker,
+				() => valueAnimate
+			);
 
-		window.requestAnimationFrame(update);
-	};
-	update();
+			let frame = 0;
 
-	return Promise.resolve();
+			const update = () => {
+				frame += 1;
+
+				switch (frame % 2) {
+					case 0: {
+						void workerPerlin3d();
+						void workerValue3d();
+						break;
+					}
+					case 1: {
+						void workerPerlin3dTile(true);
+						void workerValue3dTile(true);
+						break;
+					}
+					default:
+						break;
+				}
+
+				window.requestAnimationFrame(update);
+			};
+
+			setTimeout(update, 3000);
+		});
+	});
 };

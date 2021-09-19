@@ -5,23 +5,16 @@ import {
 	interpolationLinear,
 	interpolationQuintic,
 } from '../src/squeaker';
-import { draw1d } from './demoUtil';
+import { draw1d, getCanvasFromID } from './demoUtil';
 
-export const drawLinear = async (
-	canvasElement: HTMLCanvasElement
-): Promise<void> => drawInterpolation(canvasElement, interpolationLinear);
-export const drawHermite = async (
-	canvasElement: HTMLCanvasElement
-): Promise<void> => drawInterpolation(canvasElement, interpolationHermite);
-export const drawQuintic = async (
-	canvasElement: HTMLCanvasElement
-): Promise<void> => drawInterpolation(canvasElement, interpolationQuintic);
-export const drawTrig = async (
-	canvasElement: HTMLCanvasElement
-): Promise<void> =>
-	drawInterpolation(canvasElement, interpolationTrignonometric);
+export const main = (): void => {
+	void drawLinear(getCanvasFromID('interpolationLinear'));
+	void drawHermite(getCanvasFromID('interpolationHermite'));
+	void drawQuintic(getCanvasFromID('interpolationQuintic'));
+	void drawTrig(getCanvasFromID('interpolationTrig'));
+};
 
-export const drawInterpolation = async (
+const drawInterpolation = async (
 	canvasElement: HTMLCanvasElement,
 	interpolate: interpolationFunction
 ): Promise<void> => {
@@ -34,3 +27,12 @@ export const drawInterpolation = async (
 		false
 	);
 };
+
+const drawLinear = async (canvasElement: HTMLCanvasElement): Promise<void> =>
+	drawInterpolation(canvasElement, interpolationLinear);
+const drawHermite = async (canvasElement: HTMLCanvasElement): Promise<void> =>
+	drawInterpolation(canvasElement, interpolationHermite);
+const drawQuintic = async (canvasElement: HTMLCanvasElement): Promise<void> =>
+	drawInterpolation(canvasElement, interpolationQuintic);
+const drawTrig = async (canvasElement: HTMLCanvasElement): Promise<void> =>
+	drawInterpolation(canvasElement, interpolationTrignonometric);
