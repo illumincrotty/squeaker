@@ -152,18 +152,60 @@ export const draw2d = async (
 	canvasElement: HTMLCanvasElement,
 	generator: (x: number, y: number) => number,
 	resolution = 2,
-	modifier = (input: number) => input
+	modifier = (input: number) => input,
+	grid?: [x: number, y: number] | undefined
 ): Promise<void> => {
 	const context = canvasElement.getContext('2d', {});
 
 	if (context) {
-		for (let x = 0; x < canvasElement.width; x += resolution) {
-			for (let y = 0; y < canvasElement.height; y += resolution) {
-				const color = Math.floor(modifier(generator(x, y)) * 255);
-				context.fillStyle = `rgb(${color}, ${color}, ${color})`;
-				context.fillRect(x, y, resolution, resolution);
-			}
+		context.beginPath();
+		const splitSize = Math.floor(canvasElement.width / 10);
+		for (
+			let xSplit = 0;
+			xSplit < canvasElement.width;
+			xSplit += splitSize
+		) {
+			window.requestIdleCallback(() => {
+				for (let x = xSplit; x < xSplit + splitSize; x += resolution) {
+					for (let y = 0; y < canvasElement.height; y += resolution) {
+						const color = Math.floor(
+							modifier(generator(x, y)) * 255
+						);
+						context.strokeStyle = `rgb(${color}, ${color}, ${color})`;
+						context.strokeRect(y, x, resolution, resolution);
+						// context.fillStyle = `rgb(${color}, ${color}, ${color})`;
+						// context.fillRect(x, y, resolution, resolution);
+					}
+				}
+			});
 		}
+		window.requestIdleCallback(() => {
+			if (grid) {
+				context.fillStyle = 'rgba(256, 0, 0, .3)';
+				{
+					const xStep = canvasElement.width / grid[0];
+					for (let xIndex = 1; xIndex < grid[0]; xIndex++) {
+						context.fillRect(
+							xStep * xIndex - 1,
+							0,
+							2,
+							canvasElement.height
+						);
+					}
+				}
+				{
+					const yStep = canvasElement.height / grid[1];
+					for (let yIndex = 1; yIndex < grid[1]; yIndex++) {
+						context.fillRect(
+							0,
+							yStep * yIndex - 1,
+							canvasElement.width,
+							2
+						);
+					}
+				}
+			}
+		});
 	}
 
 	return Promise.resolve();
