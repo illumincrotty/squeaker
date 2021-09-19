@@ -1,6 +1,6 @@
 import { interpolate3d } from '../interpolation';
 import type { noiseFunction3d } from '../noiseTypes';
-import { consistentModulus, hash, pair3d, processOptions } from '../util';
+import { consistentModulus, pair3d, processOptions } from '../util';
 import { _defaultValueNoiseOptions3d } from './valueConstants';
 import type { valueNoiseOptions3d } from './valueTypes';
 
@@ -16,10 +16,10 @@ import type { valueNoiseOptions3d } from './valueTypes';
 const _permutationGenerator = (
 	rand: () => number
 ): ((x: number, y: number, z: number) => number) => {
-	const rands = new Float32Array(0xff + 1).map(() => rand());
+	const rands = new Float32Array(0xf_ff + 1).map(() => rand());
 
-	return (x: number, y: number, z: number) =>
-		rands[hash(pair3d(x, y, z) * 31) & 0xff];
+	return (x: number, y: number, z: number) => rands[pair3d(x, y, z) & 0xf_ff];
+	// rands[((x * 17) ^ (y * 31) ^ (z * 5)) & 0xff];
 };
 
 /**

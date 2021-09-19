@@ -1,6 +1,11 @@
 import { interpolate3d } from '../interpolation';
 import type { noiseFunction3d, vector3d } from '../noiseTypes';
-import { consistentModulus, dotProduct3d, pair3d } from '../util';
+import {
+	consistentModulus,
+	dotProduct3d,
+	getRandomLargePrime,
+	pair3d,
+} from '../util';
 import {
 	maxFix,
 	processPerlinOptions,
@@ -9,10 +14,13 @@ import {
 import type { perlinNoiseOptions3d } from './perlinTypes';
 
 /*@__PURE__*/
-const _generateGradients = (rand: () => number): readonly vector3d[] => {
+const _generateGradients = (
+	rand: () => number,
+	_size = 0xf_ff
+): readonly vector3d[] => {
 	const gradients: vector3d[] = [];
 	const oneOverSqrtThree = 1 / Math.sqrt(3);
-	for (let index = 0; index < 256; index++) {
+	for (let index = 0; index <= _size; index++) {
 		const phi = rand() * Math.PI * 2;
 		const theta = Math.acos(rand() * 2 - 1);
 
@@ -38,9 +46,16 @@ const _generateGradients = (rand: () => number): readonly vector3d[] => {
 const _permutationGenerator = (
 	rand: () => number
 ): ((x: number, y: number, z: number) => Readonly<vector3d>) => {
-	const _gradients: readonly vector3d[] = _generateGradients(rand);
-	return (x: number, y: number, z: number) =>
-		_gradients[(pair3d(x, y, z) >> (x & 0x4)) & 0xff];
+	const _gradients: readonly vector3d[] = _generateGradients(rand, 0xf_ff);
+	const _prime = getRandomLargePrime(rand);
+	return (_x: number, _y: number, _z: number) =>
+		_gradients[
+			pair3d(_z, _y, _x) & 0xf_ff
+			// szudzikPair(
+			// 	_z,
+			// 	szudzikPair(_x, szudzikPair(_y, 1) & 0xfff) & 0xfff
+			// ) & 0xfff
+		];
 };
 
 /**
