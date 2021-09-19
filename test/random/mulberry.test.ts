@@ -3,7 +3,6 @@ import {
 	mulberryFactory,
 	functionalMulberryFactory,
 } from '../../src/random/randomIndex';
-import { rangeGenerator } from '../../src/util';
 
 test('Mulberry returns number', (t) => {
 	const mulberry = mulberryFactory(0);
@@ -19,8 +18,8 @@ test('Mulberry is repeatable', (t) => {
 
 test('Between 0 and 1', (t) => {
 	const mulberry = mulberryFactory(928_334);
-	const oneKRandomNumbers = [...rangeGenerator({ start: 0, end: 1000 })].map(
-		mulberry
+	const oneKRandomNumbers = Array.from({ length: 10_000 }).map((_0, _1) =>
+		mulberry()
 	);
 
 	t.true(oneKRandomNumbers.every((number) => number >= 0));

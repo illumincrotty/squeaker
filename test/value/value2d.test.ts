@@ -2,11 +2,8 @@ import test from 'ava';
 import { aleaFactory } from '../../src/random/randomIndex';
 import { valueNoise2dFactory as noiseGenerator } from '../../src/squeaker';
 
-import {
-	flatGridGenerator,
-	rangeGenerator,
-	getRandomLargePrime,
-} from '../../src/util';
+import { getRandomLargePrime } from '../../src/util';
+import { xyPair } from '../testUtil';
 
 const _testing = (_parameter: {
 	xSize: number;
@@ -21,30 +18,20 @@ const _testing = (_parameter: {
 	tenths: number[]
 ] => {
 	const noise = noiseGenerator({
-		// seed: 1_092_378,
 		xSize: _parameter.xSize,
 		ySize: _parameter.ySize,
 	});
 
-	const noiseGen = flatGridGenerator(
-		{
-			start: 0,
-			end: _parameter.xSize,
-			step: _parameter.xSize / _parameter.xDiv,
-		},
-		{
-			start: 0,
-			end: _parameter.ySize,
-			step: _parameter.ySize / _parameter.yDiv,
-		},
-		noise
+	const noiseGen = xyPair(_parameter.xSize, _parameter.ySize, (x, y) =>
+		noise(x * _parameter.xDiv, y * _parameter.yDiv)
 	);
+
 	let noiseData = noiseGen.next(),
 		count = 0,
 		accumulator = 0,
 		min = noiseData.value as number,
 		max = noiseData.value as number;
-	const tenths = [...rangeGenerator({ start: 0, end: 10 })].map(() => 0);
+	const tenths = Array.from({ length: 10 }).fill(0) as number[];
 	while (!noiseData.done) {
 		count += 1;
 		accumulator += noiseData.value;
@@ -53,36 +40,20 @@ const _testing = (_parameter: {
 		tenths[Math.floor(noiseData.value * 10)] += 1;
 		noiseData = noiseGen.next();
 	}
-
-	// console.log(`Elements seen: ${count}`);
-	// console.log(`Noise Max: ${max}`);
-	// console.log(`Noise Min: ${min}`);
-	// console.log(`Noise Average: ${accumulator / count}`);
-	// console.log(
-	// 	`Noise distribution: \n${tenths
-	// 		.map(
-	// 			(value, _index) =>
-	// 				`\t0.${_index}: ${((value / count) * 100)
-	// 					.toFixed(2)
-	// 					.padStart(6, ' ')}% - ${value}`.padEnd(28, ' ') +
-	// 				'*'.repeat(1 + (value / count) * 100)
-	// 		)
-	// 		.join('\n')}`
-	// );
 	return [min, max, count, accumulator, tenths];
 };
 const _bigTestparameters = {
 	xSize: 100,
 	ySize: 100,
-	xDiv: 1000,
-	yDiv: 1000,
+	xDiv: 0.1,
+	yDiv: 0.1,
 };
 
 const _smallTestparameters = {
 	xSize: 10,
 	ySize: 10,
-	xDiv: 100,
-	yDiv: 100,
+	xDiv: 0.1,
+	yDiv: 0.1,
 };
 
 const data = (() => {
@@ -90,21 +61,14 @@ const data = (() => {
 	return () => closuredData;
 })();
 
-// _testing();
-
 test('Basic 2d test', (t) => {
 	const noise = noiseGenerator();
 	t.is(typeof noise(0, 0), 'number');
 });
 
 test('range is [0,1)', (t) => {
-	const noiseData = [
-		...flatGridGenerator(
-			{ start: 0, end: 10, step: 0.1 },
-			{ start: 0, end: 10, step: 0.1 },
-			noiseGenerator()
-		),
-	];
+	const noise = noiseGenerator();
+	const noiseData = [...xyPair(100, 100, (x, y) => noise(x * 0.1, y * 0.1))];
 	t.true(noiseData.every((v) => v >= 0 && v < 1));
 });
 
