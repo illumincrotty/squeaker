@@ -34,7 +34,7 @@
 		"alphaBump": "pnpm version prerelease --preid alpha --git-tag-version",
 		"benchmark": "pnpm node --loader=ts-node/esm --experimental-specifier-resolution=node --trace-warnings ./benchmarking/benchmark.ts",
 		"build": "pnpm test && pnpm build:noTest",
-		"build:noTest": "microbundle --tsconfig .\\tsconfig-build.json",
+		"build:noTest": "microbundle --tsconfig .\\tsconfig.build.json",
 		"build:web": "vite build",
 		"ci": "c8 --reporter lcovonly pnpm test",
 		"coverage": "c8 --reporter lcov --reporter text --skip-full pnpm test",
@@ -84,7 +84,7 @@
 			"ts": "module"
 		},
 		"environmentVariables": {
-			"TS_NODE_PROJECT": "tsconfig-test.json"
+			"TS_NODE_PROJECT": "tsconfig.test.json"
 		},
 		"nodeArguments": [
 			"--loader=ts-node/esm",
@@ -92,5 +92,12 @@
 			"--no-warnings=ExperimentalWarning"
 		]
 	},
-	"source": "./src/squeaker.ts"
+	"source": "./src/squeaker.ts",
+	"minify": {
+		"compress": {
+			"drop_console": true,
+			"keep_fargs": false,
+			"passes": 5
+		}
+	}
 }

@@ -21,7 +21,7 @@
 		"ecmaVersion": "latest",
 		"sourceType": "module",
 		"extensions": ".ts",
-		"project": ["./tsconfig.json", "./tsconfig-test.json"]
+		"projects": ["tsconfig.json", "tsconfig.test.json"]
 	},
 	"plugins": [
 		"@typescript-eslint", //https://github.com/typescript-eslint/typescript-eslint/tree/master/packages/eslint-plugin/docs/rules
