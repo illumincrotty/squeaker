@@ -5,8 +5,8 @@
 
 <!-- Shields -->
 
-![npm](https://img.shields.io/npm/l/squeaker.svg)
-![size-badge](https://img.badgesize.io/https:/unpkg.com/squeaker/dist/index.modern.js?compression=brotli)
+![npm](https://img.shields.io/npm/l/squeaker)
+![size-badge](https://img.badgesize.io/https:/unpkg.com/squeaker/dist/squeaker.modern.js?compression=brotli)
 ![Types](https://badgen.net/npm/types/squeaker)
 [![codecov](https://codecov.io/gh/illumincrotty/squeaker/branch/main/graph/badge.svg?token=W17SYOVM6T)](https://codecov.io/gh/illumincrotty/squeaker)
 
@@ -20,17 +20,17 @@
 ## 📝 Table of Contents
 
 - [📣 squeaker](#-squeaker)
-  - [📝 Table of Contents](#-table-of-contents)
-  - [🧐 About](#-about)
-  - [Install](#install)
-    - [Package Manager](#package-manager)
-    - [CDN](#cdn)
-  - [🎈 Usage](#-usage)
-  - [📖 Example](#-example)
-  - [🔧 Running the tests](#-running-the-tests)
-  - [📃 License](#-license)
-  - [✍️ Authors](#️-authors)
-  - [🔨 Similar Tools](#-similar-tools)
+	- [📝 Table of Contents](#-table-of-contents)
+	- [🧐 About](#-about)
+	- [Install](#install)
+		- [Package Manager](#package-manager)
+		- [CDN](#cdn)
+	- [🎈 Usage](#-usage)
+	- [📖 Example](#-example)
+	- [🔧 Running the tests](#-running-the-tests)
+	- [📃 License](#-license)
+	- [✍️ Authors](#️-authors)
+	- [🔨 Similar Tools](#-similar-tools)
 
 ## 🧐 About
 
