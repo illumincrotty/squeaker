@@ -1,5 +1,5 @@
 import bench from 'benny';
-import { percent, summarize } from './benchmark';
+import { percent, summarize } from './benchmarkUtilities';
 
 /***************************************************************************************/
 /*                                                                                     */
