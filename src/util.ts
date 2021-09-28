@@ -289,27 +289,3 @@ export const processOptions = <
 
 	return options as Required<t>;
 };
-
-export const lruCache = <output>(
-	functionToCache: (...input: number[]) => output,
-	maxSize = 12
-): typeof functionToCache => {
-	const _cacheMap: Map<number, output> = new Map();
-	return (...input: Parameters<typeof functionToCache>): output => {
-		const _key = input.reduce((previous, current) => previous ^ current, 0);
-		const _value = _cacheMap.get(_key);
-
-		if (_value) {
-			_cacheMap.delete(_key);
-			_cacheMap.set(_key, _value);
-			return _value;
-		} else {
-			if (_cacheMap.size >= maxSize) {
-				_cacheMap.delete(_cacheMap.keys().next().value);
-			}
-			const run = functionToCache(...input);
-			_cacheMap.set(_key, run);
-			return run;
-		}
-	};
-};

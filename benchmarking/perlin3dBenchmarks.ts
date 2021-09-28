@@ -1,14 +1,10 @@
 import bench from 'benny';
 import { percent, summarize } from './benchmarkUtilities';
-import {
-	perlinNoise3dFactory,
-	perlinNoise3dFactoryModified,
-} from '../src/perlin/perlin3d';
+import { perlinNoise3dFactory } from '../src/perlin/perlin3d';
 import { perlinNoise3dFactory as distFactory } from '../dist/squeaker';
 import type { noiseFunction3d } from '../dist/noiseTypes';
 
 const current = perlinNoise3dFactory({ seed: 'test seed' });
-const modified = perlinNoise3dFactoryModified({ seed: 'test seed' });
 const dist = distFactory({ seed: 'test seed' });
 
 const test3dGrid = (
@@ -28,7 +24,6 @@ void bench.suite(
 	bench.add('Warmup', () => test3dGrid(current), { minSamples: 100 }),
 
 	bench.add('Base', () => test3dGrid(current), { minSamples: 100 }),
-	bench.add('Modified', () => test3dGrid(modified), { minSamples: 100 }),
 	bench.add('Dist', () => test3dGrid(dist), { minSamples: 100 }),
 
 	bench.cycle(percent),
