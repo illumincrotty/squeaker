@@ -2,7 +2,7 @@ import {
 	perlinNoise1dFactory,
 	perlinNoise2dFactory,
 	randomFactory,
-} from '../src/squeaker';
+} from '../dist/squeaker';
 import { draw1d, draw2d, getCanvasFromID } from './demoUtil';
 // const sourcePromise = (async () => import('../src/squeaker'))();
 
@@ -25,7 +25,7 @@ const drawPerlin1d = async (
 ): Promise<void> => {
 	const scale = 100;
 	const noise = perlinNoise1dFactory({
-		random: randomFactory('98iks').random,
+		random: randomFactory('jinkes').random,
 		xSize: canvasElement.width / scale,
 	});
 

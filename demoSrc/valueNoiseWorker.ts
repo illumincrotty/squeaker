@@ -1,11 +1,11 @@
-import type { noiseFunction3d } from '../src/noiseTypes';
-import type { valueNoiseOptions3d } from '../src/squeaker';
+import type { noiseFunction3d } from '../dist/noiseTypes';
 import {
 	interpolationHermite,
 	interpolationLinear,
 	interpolationQuintic,
 	valueNoise3dFactory,
-} from '../src/squeaker';
+	valueNoiseOptions3d,
+} from '../dist/squeaker';
 import { rect } from './demoUtil';
 import type { interpolation, messageData } from './workerTypes';
 let noiseMachine: [width: number, height: number, rand: noiseFunction3d] = [

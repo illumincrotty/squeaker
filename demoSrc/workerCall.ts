@@ -100,10 +100,10 @@ export const main = (): void => {
 
 	const p3d = getCanvasFromID('perlin3d'),
 		p3dTile = getCanvasFromID('perlin3dTile'),
-		p3dParent = p3d.parentElement as HTMLElement,
+		p3dParent = p3d.parentElement?.parentElement as HTMLElement,
 		v3d = getCanvasFromID('value3d'),
 		v3dTile = getCanvasFromID('value3dTile'),
-		v3dParent = v3d.parentElement as HTMLElement;
+		v3dParent = v3d.parentElement?.parentElement as HTMLElement;
 
 	let perlinAnimate = true,
 		valueAnimate = true;

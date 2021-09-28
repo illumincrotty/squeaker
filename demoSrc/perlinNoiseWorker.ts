@@ -1,12 +1,12 @@
-import type { noiseFunction3d } from '../src/noiseTypes';
-import type { perlinNoiseOptions3d } from '../src/squeaker';
+import type { noiseFunction3d } from '../dist/noiseTypes';
 import {
 	interpolationHermite,
 	interpolationLinear,
 	interpolationQuintic,
 	interpolationTrignonometric,
 	perlinNoise3dFactory,
-} from '../src/squeaker';
+	perlinNoiseOptions3d,
+} from '../dist/squeaker';
 import { rect } from './demoUtil';
 import type { interpolation, messageData } from './workerTypes';
 let noiseMachine: [width: number, height: number, rand: noiseFunction3d] = [
@@ -14,6 +14,8 @@ let noiseMachine: [width: number, height: number, rand: noiseFunction3d] = [
 	500,
 	(_x: number, _y: number, _z: number) => 0.5,
 ];
+
+let colorArray: Uint8ClampedArray;
 
 const interpolationSwitch = (_functionName: interpolation = 'hermite') => {
 	switch (_functionName) {
@@ -61,6 +63,9 @@ self.addEventListener('message', (message): void => {
 	const data = message.data as messageData;
 
 	if (data.constructor?.canvasHeight) {
+		colorArray = new Uint8ClampedArray(
+			4 * data.constructor.canvaswidth * data.constructor.canvasHeight
+		);
 		noiseMachine = [
 			data.constructor.canvaswidth,
 			data.constructor.canvasHeight,
@@ -75,8 +80,6 @@ const resolution = 2,
 	scale = 20;
 const update = (frame: number): ImageData => {
 	const [width, height, rand] = noiseMachine;
-
-	const colorArray = new Uint8ClampedArray(4 * width * height);
 
 	for (let x = 0; x < width; x += resolution) {
 		for (let y = 0; y < height; y += resolution) {

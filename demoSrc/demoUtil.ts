@@ -1,6 +1,4 @@
-/*__PURE__*/
-/*__INLINE__*/
-export const solidCanvasFill = (
+export const solidCanvasFill = /*__INLINE__*/ (
 	canvas: HTMLCanvasElement,
 	fill: CanvasRenderingContext2D['fillStyle'] = 'gray'
 ): void => {
