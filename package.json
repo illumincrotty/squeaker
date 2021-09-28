@@ -1,45 +1,26 @@
 {
 	"name": "squeaker",
 	"version": "0.0.1-alpha.4",
-	"description": "A tiny (but advanced) simplex noise module",
 	"type": "module",
-	"source": "./src/squeaker.ts",
-	"exports": "./dist/squeaker.modern.js",
-	"main": "./dist/squeaker.cjs",
-	"module": "./dist/squeaker.js",
-	"unpkg": "./dist/squeaker.umd.js",
-	"typings": "./dist/squeaker.d.ts",
-	"sideEffects": false,
-	"files": [
-		"dist",
-		"src"
-	],
-	"scripts": {
-		"serve": "vite serve",
-		"build:web": "vite build",
-		"preview": "vite preview",
-		"lint": "eslint src --ext .ts",
-		"lint:fix": "eslint src --fix --ext .ts",
-		"build": "pnpm test && pnpm build:noTest",
-		"build:noTest": "microbundle --tsconfig .\\tsconfig-build.json",
-		"test": "ava",
-		"coverage": "c8 --reporter lcov --reporter text --skip-full pnpm test",
-		"report": "c8 report --reporter lcovonly",
-		"ci": "c8 --reporter lcovonly pnpm test",
-		"doc": "lehre --template-path ./template.cjs -d src --write",
-		"alphaBump": "pnpm version prerelease --preid alpha --git-tag-version",
-		"benchmark": "pnpm node --loader=ts-node/esm --experimental-specifier-resolution=node --trace-warnings ./benchmarking/benchmark.ts"
-	},
-	"author": "Brian Crotty",
-	"license": "MIT",
+	"description": "A tiny (but advanced) simplex noise module",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/illumincrotty/squeaker.git"
 	},
+	"homepage": "https://github.com/illumincrotty/squeaker#readme",
 	"bugs": {
 		"url": "https://github.com/illumincrotty/squeaker/issues"
 	},
-	"homepage": "https://github.com/illumincrotty/squeaker#readme",
+	"author": "Brian Crotty",
+	"license": "MIT",
+	"main": "./dist/squeaker.cjs",
+	"module": "./dist/squeaker.js",
+	"exports": "./dist/squeaker.modern.js",
+	"typings": "./dist/squeaker.d.ts",
+	"files": [
+		"dist",
+		"src"
+	],
 	"keywords": [
 		"types",
 		"noise",
@@ -49,13 +30,29 @@
 		"random",
 		"simplex"
 	],
+	"scripts": {
+		"alphaBump": "pnpm version prerelease --preid alpha --git-tag-version",
+		"benchmark": "pnpm node --loader=ts-node/esm --experimental-specifier-resolution=node --trace-warnings ./benchmarking/benchmark.ts",
+		"build": "pnpm test && pnpm build:noTest",
+		"build:noTest": "microbundle --tsconfig .\\tsconfig-build.json",
+		"build:web": "vite build",
+		"ci": "c8 --reporter lcovonly pnpm test",
+		"coverage": "c8 --reporter lcov --reporter text --skip-full pnpm test",
+		"doc": "lehre --template-path ./template.cjs -d src --write",
+		"lint": "eslint src --ext .ts",
+		"lint:fix": "eslint src --fix --ext .ts",
+		"preview": "vite preview",
+		"report": "c8 report --reporter lcovonly",
+		"serve": "vite serve",
+		"test": "ava"
+	},
 	"devDependencies": {
-		"@types/node": "^16.9.4",
-		"@types/pngjs": "^6.0.1",
-		"@typescript-eslint/eslint-plugin": "^4.31.1",
-		"@typescript-eslint/parser": "^4.31.1",
+		"@types/node": "^16.10.1",
+		"@types/ranjs": "^1.22.2",
+		"@typescript-eslint/eslint-plugin": "^4.32.0",
+		"@typescript-eslint/parser": "^4.32.0",
 		"asm-noise": "^1.0.2",
-		"autoprefixer": "^10.3.4",
+		"autoprefixer": "^10.3.6",
 		"ava": "^4.0.0-alpha.2",
 		"benny": "^3.6.15",
 		"c8": "^7.9.0",
@@ -69,11 +66,14 @@
 		"lehre": "^1.5.0",
 		"microbundle": "^0.13.3",
 		"prettier": "^2.4.1",
+		"prettier-plugin-pkg": "^0.10.0",
+		"ranjs": "^1.23.2",
 		"source-map-support": "^0.5.20",
 		"ts-node": "^10.2.1",
 		"typescript": "^4.4.3",
 		"vite": "^2.5.10"
 	},
+	"sideEffects": false,
 	"ava": {
 		"files": [
 			"test/**/*.test.ts",
@@ -83,10 +83,14 @@
 		"extensions": {
 			"ts": "module"
 		},
+		"environmentVariables": {
+			"TS_NODE_PROJECT": "tsconfig-test.json"
+		},
 		"nodeArguments": [
 			"--loader=ts-node/esm",
 			"--experimental-specifier-resolution=node",
 			"--no-warnings=ExperimentalWarning"
 		]
-	}
+	},
+	"source": "./src/squeaker.ts"
 }
