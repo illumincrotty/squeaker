@@ -1,4 +1,3 @@
-import autoprefixer from 'autoprefixer';
 import type { UserConfig, UserConfigFn } from 'vite';
 
 const config: UserConfigFn = (environment) => {
@@ -9,7 +8,6 @@ const config: UserConfigFn = (environment) => {
 	const configSet: UserConfig = {
 		css: {
 			modules: false,
-			postcss: { plugins: [autoprefixer()] },
 		},
 		base: '/squeaker/',
 		build: {
