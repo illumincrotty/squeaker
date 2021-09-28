@@ -109,7 +109,7 @@ export const main = (): void => {
 		valueAnimate = true;
 	const animationObserver = new IntersectionObserver(
 		(entries) => {
-			entries.forEach((element) => {
+			for (const element of entries) {
 				switch (element.target) {
 					case p3dParent: {
 						perlinAnimate = element.isIntersecting;
@@ -126,7 +126,7 @@ export const main = (): void => {
 						break;
 					}
 				}
-			});
+			}
 		},
 		{ threshold: [0] }
 	);

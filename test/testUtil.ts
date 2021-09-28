@@ -1,4 +1,4 @@
-// import {} from '@std'
+import ranjs from 'ranjs';
 
 export const xyPair = function* <t>(
 	x: number,
@@ -12,66 +12,100 @@ export const xyPair = function* <t>(
 	}
 };
 
-export const getStandardDeviation = (
-	data: number[],
-	sample = false,
-	mean?: number
-): number => {
-	const _mean =
-		mean ?? data.reduce((sum, value) => sum + value, 0) / data.length;
-	return Math.sqrt(
-		data.reduce(
-			(sum, value) => sum + (value - _mean) * (value - _mean),
-			0
-		) /
-			(data.length - (sample ? 1 : 0))
-	);
+/**
+ * Calculates the unbiased sample variance of an array of values using [Welford's algorithm]{@link https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Welford's_online_algorithm}.
+ *
+ * @function variance
+ * @param values - Array of values to calculate variance for.
+ * @returns Variance of the values if there are more than two, undefined otherwise.
+ * @example
+ *
+ * ran.dispersion.variance([])
+ * // => undefined
+ *
+ * ran.dispersion.variance([1])
+ * // => undefined
+ *
+ * ran.dispersion.variance([1, 2, 3])
+ * // => 2.5
+ */
+export const variance = (values: number[]): number | undefined => {
+	if (values.length > 1) {
+		let n = 0;
+		let diff = 0;
+		let mean = 0;
+		let M = 0;
+		for (const x of values) {
+			diff = x - mean;
+			mean += diff / ++n;
+			M += diff * (x - mean);
+		}
+		return M / (n - 1);
+	}
 };
 
-// const uniformCDF = (input: number) => input;
-// const erf = (x: number) => {
-// 	// constants
-// 	const a1 = 0.254_829_592;
-// 	const a2 = -0.284_496_736;
-// 	const a3 = 1.421_413_741;
-// 	const a4 = -1.453_152_027;
-// 	const a5 = 1.061_405_429;
-// 	const p = 0.327_591_1;
+/**
+ * Calculates the unbiased standard deviation of an array of values.
+ *
+ * @function stdev
+ * @param values -  Array of values to calculate standard deviation for.
+ * @returns - Standard deviation of the values if there are more than two, undefined otherwise.
+ * @example
+ *
+ * ran.dispersion.stdev([])
+ * // => undefined
+ *
+ * ran.dispersion.stdev([1])
+ * // => undefined
+ *
+ * ran.dispersion.stdev([1, 2, 3, 4, 5])
+ * // => 1.5811388300841898
+ */
+export const stdev = (values: number[]): number | undefined => {
+	const v = variance(values);
+	return v && Math.abs(Math.sqrt(v));
+};
 
-// 	// Save the sign of x
+const uniform = new ranjs.dist.Uniform(0, 1);
 
-// 	const sign = Math.sign(x);
-// 	x = Math.abs(x);
+export const isUniform = (
+	input: number[]
+): ReturnType<typeof uniform['test']> => {
+	return uniform.test(input);
+};
 
-// 	// A&S formula 7.1.26
-// 	var t = 1 / (1 + p * x);
-// 	var y =
-// 		1 -
-// 		((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+export const isNormal = (
+	input: number[]
+): ReturnType<typeof kolmogorovSmirnov> => {
+	{
+		const normal = new ranjs.dist.Normal(
+			input.reduce((sum, value) => sum + value, 0) / input.length,
+			stdev(input)
+		);
 
-// 	return sign * y;
-// };
+		return kolmogorovSmirnov(input, normal.cdf.bind(normal));
+	}
+};
 
-// const normalCDFFactory = (mean: number, standardDeviation: number) => {
-// 	if (standardDeviation === 0) {
-// 		return (input: number) => (input < mean ? 0 : 1);
-// 	}
-// 	const DENOMINATOR = standardDeviation * Math.SQRT2;
-// 	return (input: number) => 0.5 * erf((mean - input) / DENOMINATOR);
-// };
+export const kolmogorovSmirnov = (
+	values: number[],
+	cdf: (x: number) => number
+): { statistics: number; passed: boolean } => {
+	// Sort values for estimated CDF
+	values.sort((a, b) => a - b);
 
-// export const ksTest = (
-// 	x: number[],
-// 	y: 'normal' | 'uniform' | ((input: number) => number)
-// ) => {
-// 	const SUM = x.reduce((sum, add) => sum + add, 0),
-// 		MEAN = SUM / x.length,
-// 		standardDeviation = getStandardDeviation(x, true, MEAN);
+	// Calculate D value
+	let D = 0;
+	for (let index = 0; index < values.length; index++) {
+		D = Math.max(
+			D,
+			Math.abs((index + 1) / values.length - cdf(values[index]))
+		);
+	}
 
-// 	const cdf =
-// 		typeof y === 'string'
-// 			? y === 'normal'
-// 				? normalCDFFactory(MEAN, standardDeviation)
-// 				: uniformCDF
-// 			: y;
-// };
+	// Return comparison results
+	return {
+		statistics: D,
+		passed: D <= 1.628 / Math.sqrt(values.length),
+	};
+};

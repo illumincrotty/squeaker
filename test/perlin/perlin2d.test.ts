@@ -1,10 +1,7 @@
 import test from 'ava';
 import { aleaFactory } from '../../src/random/randomIndex';
 import { perlinNoise2dFactory as noiseGenerator } from '../../src/squeaker';
-// eslint-disable-next-line ava/no-import-test-files
-import { xyPair } from '../testUtil';
-
-// _testing();
+import { isNormal, xyPair } from '../testUtil';
 
 test('Basic 2d test', (t) => {
 	const noise = noiseGenerator();
@@ -114,15 +111,13 @@ test('returns values in range [0,1]', (t) => {
 	t.true(noiseDataMin >= 0, `Min is ${noiseDataMin}`);
 });
 
-test('creates normal distribution', (t) => {
-	// const [_a, _b, _count, _accumulator, _tenths] = data();
-	// const distribution = [0, 2, 8, 16, 23, 23, 16, 8, 2, 0];
-	// const set = _tenths.map(
-	// 	(input, index) => distribution[index] - (input / _count) * 100
-	// );
+test('Normal Distribution', (t) => {
+	const data: number[] = [
+		...xyPair(10, 100, (x, y) =>
+			noiseGlobal((x + 12.2) * 257 * 0.1, (y + 14.624) * 257 * 0.1)
+		),
+	];
 
-	// t.log(set);
-
-	// t.true(set.every((input) => Math.abs(input) <= 1));
-	t.pass('Need to be implemented');
+	const results = isNormal(data);
+	t.true(results.passed, `U: ${results.statistics.toFixed(3)}`);
 });

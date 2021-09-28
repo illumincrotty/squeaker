@@ -1,4 +1,5 @@
 import bench from 'benny';
+
 import type {
 	CaseResult,
 	Options,
@@ -49,7 +50,7 @@ const resultTag = <resultType extends CaseResult>(
 		.toFixed(2)
 		.padStart(6)}%`;
 
-const percent: (result: CaseResult, summary: Summary) => void = (
+export const percent: (result: CaseResult, summary: Summary) => void = (
 	_result: CaseResult,
 	_summary: Summary
 ) => {
@@ -62,7 +63,7 @@ const percent: (result: CaseResult, summary: Summary) => void = (
 	// console.log(resultTag(_result));
 };
 
-const summarize: (summary: Summary) => void = (_summary) => {
+export const summarize: (summary: Summary) => void = (_summary) => {
 	const longestName = Math.max(
 		..._summary.results.map((result) => result.name.length)
 	);
@@ -73,7 +74,7 @@ const summarize: (summary: Summary) => void = (_summary) => {
 	const results = ['', `${_summary.name} Results: `, ''];
 
 	const sortedResults = [..._summary.results].sort((a, b) => b.ops - a.ops);
-	sortedResults.forEach((result, index) => {
+	for (const [index, result] of sortedResults.entries()) {
 		results.push(
 			`${resultTag(result, longestName, longestOpCount)} | ${
 				index
@@ -83,7 +84,7 @@ const summarize: (summary: Summary) => void = (_summary) => {
 					: 'Fastest'
 			}`
 		);
-	});
+	}
 	results.push('');
 	const longestResultString = Math.max(
 		...results.map((value) => value.length)

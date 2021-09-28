@@ -15,7 +15,9 @@ export const solidCanvasFill = (
 /*__INLINE__*/
 export const drawCanvasPlaceholders = (
 	canvasArray: HTMLCanvasElement[]
-): void => canvasArray.forEach((canvas) => solidCanvasFill(canvas));
+): void => {
+	for (const canvas of canvasArray) solidCanvasFill(canvas);
+};
 
 /*__PURE__*/
 /*__INLINE__*/

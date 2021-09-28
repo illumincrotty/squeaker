@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-magic-numbers */
 import test from 'ava';
 import type { vector2d } from '../../src/noiseTypes';
 import {

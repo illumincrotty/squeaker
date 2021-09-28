@@ -162,7 +162,10 @@ export const interpolate4d = (
 };
 
 /**
- * linearInterpolation.
+ * Linear Interpolation aka LERP
+ *
+ * No smoothing, causes artifacts but is slightly faster
+ * Uses f(t) = t, pretty simple
  *
  * @param t - a value in domain `[0,1]`
  * @returns the same input value

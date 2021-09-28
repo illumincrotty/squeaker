@@ -27,23 +27,20 @@ import type { perlinNoiseOptions2d } from './perlinTypes';
  * Generates a (comparatively) memory efficient set of permutations
  *
  * @private
- * @param x - valid x input (+1)
- * @param y - valid y input (+1)
+ * @param _x - valid x input (+1)
+ * @param _y - valid y input (+1)
  * @param random - a random number generating function
  * @returns function that takes numbers from the input ranges and returns a permuted gradient
  */
 const _lightPermutationsGenerator = (
-	x: number,
-	y: number,
+	_x: number,
+	_y: number,
 	random: () => number
 ): ((x: number, y: number) => vector2d) => {
-	const _xperms = generatePermutationArray(x + 1, random);
+	const _xperms = generatePermutationArray(_x + 1, random);
 	_xperms[_xperms.length - 1] = _xperms[0];
 
-	// const _yperms = new Uint32Array(y + 1).map(
-	// 	(_, _index) => altHash(_index * 31 + 0x1e_c1) & 0xf_ff_ff
-	// );
-	const _yperms = generatePermutationArray(y + 1, random);
+	const _yperms = generatePermutationArray(_y + 1, random);
 	_yperms[_yperms.length - 1] = _yperms[0];
 
 	return (x: number, y: number) =>
@@ -68,20 +65,20 @@ const _lightPermutationsGenerator = (
  * Generates a memory inefficient but fast function to return permutations
  *
  * @private
- * @param x - valid x input (+1)
- * @param y - valid y input (+1)
+ * @param xSize - valid x input (+1)
+ * @param ySize - valid y input (+1)
  * @param rand - a function to generate random numbers
  * @returns function that takes numbers from the input ranges and returns a permuted gradient
  */
 const _heavyPermutationsGenerator = (
-	x: number,
-	y: number,
+	xSize: number,
+	ySize: number,
 	rand: () => number
 ): ((x: number, y: number) => vector2d) => {
 	const _special = _appendFirst(
-		Array.from({ length: x }).map(() =>
+		Array.from({ length: xSize }).map(() =>
 			_appendFirst(
-				Array.from({ length: y }).map(
+				Array.from({ length: ySize }).map(
 					() => gradients2D[Math.trunc(rand() * gradients2D.length)]
 				)
 			)

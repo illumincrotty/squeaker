@@ -11,17 +11,22 @@ import {
 	interpolationQuintic,
 	interpolationTrignonometric,
 	powerEase,
-} from '../../src/squeaker.js';
+} from '../../src/interpolation';
 
 const range0to1 = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1];
 
 test('Linear', (t) => {
-	t.deepEqual(range0to1.map(interpolationLinear), range0to1);
+	t.deepEqual(
+		range0to1.map((element) => interpolationLinear(element)),
+		range0to1
+	);
 });
 
 test('Hermitic', (t) => {
 	t.deepEqual(
-		range0to1.map(interpolationHermite).map((v) => v.toFixed(3)),
+		range0to1
+			.map((element) => interpolationHermite(element))
+			.map((v) => v.toFixed(3)),
 		[0, 0.028, 0.104, 0.216, 0.352, 0.5, 0.648, 0.784, 0.896, 0.972, 1].map(
 			(v) => v.toFixed(3)
 		)
@@ -30,7 +35,9 @@ test('Hermitic', (t) => {
 
 test('Quintic', (t) => {
 	t.deepEqual(
-		range0to1.map(interpolationQuintic).map((v) => v.toFixed(6)),
+		range0to1
+			.map((element) => interpolationQuintic(element))
+			.map((v) => v.toFixed(6)),
 		[
 			0, 0.008_56, 0.057_92, 0.163_08, 0.317_44, 0.5, 0.682_56, 0.836_92,
 			0.942_08, 0.991_44, 1,
@@ -40,7 +47,9 @@ test('Quintic', (t) => {
 
 test('Heptic', (t) => {
 	t.deepEqual(
-		range0to1.map(interpolationHeptic).map((v) => v.toFixed(6)),
+		range0to1
+			.map((element) => interpolationHeptic(element))
+			.map((v) => v.toFixed(6)),
 		[
 			0, 0.076_855_750_507_422_1, 0.179_233_689_599_999_97,
 			0.302_383_908_769_922_05, 0.438_879_750_400_000_4,
@@ -53,7 +62,9 @@ test('Heptic', (t) => {
 
 test('trig', (t) => {
 	t.deepEqual(
-		range0to1.map(interpolationTrignonometric).map((v) => v.toFixed(6)),
+		range0to1
+			.map((element) => interpolationTrignonometric(element))
+			.map((v) => v.toFixed(6)),
 		[
 			0, 0.024_471_741_852_423_234, 0.095_491_502_812_526_27,
 			0.206_107_373_853_763_43, 0.345_491_502_812_526_33, 0.5,

@@ -3,6 +3,7 @@ import {
 	mulberryFactory,
 	functionalMulberryFactory,
 } from '../../src/random/randomIndex';
+import { isUniform } from '../testUtil';
 
 test('Mulberry returns number', (t) => {
 	const mulberry = mulberryFactory(0);
@@ -32,4 +33,11 @@ test('Functional Mulberry', (t) => {
 	const [secondValueCopy, _fm2v1] = fm();
 	t.is(secondValue, secondValueCopy);
 	t.not(firstValue, secondValue);
+});
+
+test('Uniform Distribution', (t) => {
+	const rand = mulberryFactory(37_893);
+	const data = Array.from({ length: 1e5 }).map(() => rand());
+	const results = isUniform(data);
+	t.true(results.passed, `p value: ${results.statistics.toFixed(3)}`);
 });

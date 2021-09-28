@@ -93,7 +93,7 @@ export interface baseNoiseOptions1d {
 	/**
 	 * The seed used to generate the noise
 	 */
-	seed?: number;
+	seed?: number | string;
 	/**
 	 * the x size before the noise starts to loop, 0 or undefined are infinite
 	 */

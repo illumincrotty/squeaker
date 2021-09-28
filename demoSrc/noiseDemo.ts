@@ -17,6 +17,7 @@ void perlinMain();
 queueMicrotask(() => {
 	document
 		.querySelectorAll('canvas')
+		// eslint-disable-next-line unicorn/no-array-for-each
 		.forEach((canvas) => solidCanvasFill(canvas));
 });
 

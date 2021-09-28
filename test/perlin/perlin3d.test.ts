@@ -16,10 +16,10 @@ for (let x = 0; x < 100; x += 1) {
 		}
 	}
 }
-noiseData.flat(2).forEach((value) => {
+for (const value of noiseData.flat(2)) {
 	min = Math.min(min, value);
 	max = Math.max(max, value);
-});
+}
 
 // console.log(`Max: ${max}, Min: ${min}`);
 
