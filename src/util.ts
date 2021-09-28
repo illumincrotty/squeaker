@@ -170,18 +170,22 @@ export const primeGenerator = (max = 1000): number[] => {
  * @param minimum - the threshold value to compare the values in the array to, uses greather than or equal to
  * @returns a new array of values from the input array that are greater than or equal to minimum
  */
-const aboveMin = (inputArray: readonly number[], minimum: number): number[] =>
-	inputArray.filter((value) => value >= minimum);
+const aboveMin =
+	/*@__PURE__*/
+	/*@__INLINE__*/ (
+		inputArray: readonly number[],
+		minimum: number
+	): number[] => inputArray.filter((value) => value >= minimum);
 
 /** primes between 2^15 and 2^16 */
-export const largePrimes: readonly number[] = aboveMin(
-	primeGenerator(2 ** 17),
-	2 ** 15
-);
+export const largePrimes: readonly number[] =
+	/*@__PURE__*/
+	aboveMin(primeGenerator(2 ** 17), 2 ** 15);
 
-/*@__PURE__*/
-export const getRandomLargePrime = (rand: () => number): number =>
-	largePrimes[Math.floor(largePrimes.length * rand())];
+export const getRandomLargePrime =
+	/*@__PURE__*/
+	(rand: () => number): number =>
+		largePrimes[Math.floor(largePrimes.length * rand())];
 
 /**
  *	Rosenberg Strong Pairing
@@ -192,9 +196,9 @@ export const getRandomLargePrime = (rand: () => number): number =>
  * @param y - the y coordinate
  * @returns the paired value
  */
-/*@__PURE__*/
-export const rosenbergStrongPair = (x: number, y: number): number =>
-	x < y ? y * y + x : x * x + 2 * x - y;
+export const rosenbergStrongPair =
+	/*@__PURE__*/
+	(x: number, y: number): number => (x < y ? y * y + x : x * x + 2 * x - y);
 
 /**
  *	Cantor Pairing
@@ -231,9 +235,8 @@ export const szudzikPair = (x: number, y: number): number =>
  * @param y - the y coordinate
  * @returns the paired value
  */
-/*@__PURE__*/
-/*@__INLINE__*/
-export const pair2d = (x: number, y: number): number => szudzikPair(x, y);
+export const pair2d = (x: number, y: number): number /*@__INLINE__*/ =>
+	szudzikPair(x, y);
 
 /**
  *	Pairing
@@ -245,10 +248,9 @@ export const pair2d = (x: number, y: number): number => szudzikPair(x, y);
  * @param z - the z coordinate
  * @returns the paired value
  */
-/*@__PURE__*/
-/*@__INLINE__*/
 export const pair3d = (x: number, y: number, z: number): number =>
 	((x * 251) ^ (y * 239) ^ (z * 241)) * 4103;
+
 /**
  * processOptions
  *
@@ -286,4 +288,28 @@ export const processOptions = <
 	}
 
 	return options as Required<t>;
+};
+
+export const lruCache = <output>(
+	functionToCache: (...input: number[]) => output,
+	maxSize = 12
+): typeof functionToCache => {
+	const _cacheMap: Map<number, output> = new Map();
+	return (...input: Parameters<typeof functionToCache>): output => {
+		const _key = input.reduce((previous, current) => previous ^ current, 0);
+		const _value = _cacheMap.get(_key);
+
+		if (_value) {
+			_cacheMap.delete(_key);
+			_cacheMap.set(_key, _value);
+			return _value;
+		} else {
+			if (_cacheMap.size >= maxSize) {
+				_cacheMap.delete(_cacheMap.keys().next().value);
+			}
+			const run = functionToCache(...input);
+			_cacheMap.set(_key, run);
+			return run;
+		}
+	};
 };

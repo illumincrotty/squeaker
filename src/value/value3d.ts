@@ -93,12 +93,12 @@ export const valueNoise3dFactory = (
 
 		return interpolate3d(
 			_perms(_x0, _y0, _z0),
-			_perms(_x0, _y1, _z0),
-			_perms(_x1, _y0, _z0),
-			_perms(_x1, _y1, _z0),
 			_perms(_x0, _y0, _z1),
+			_perms(_x0, _y1, _z0),
 			_perms(_x0, _y1, _z1),
+			_perms(_x1, _y0, _z0),
 			_perms(_x1, _y0, _z1),
+			_perms(_x1, _y1, _z0),
 			_perms(_x1, _y1, _z1),
 			_xFade,
 			_yFade,

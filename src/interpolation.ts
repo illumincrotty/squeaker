@@ -47,12 +47,12 @@ export const interpolate2d = (
  * the p inputs are the values at relative points
  *
  * @param p000 - the value from relative position `(x+0, y+0, z+0)`
- * @param p010 - the value from relative position `(x+0, y+1, z+0)`
- * @param p100 - the value from relative position `(x+1, y+0, z+0)`
- * @param p110 - the value from relative position `(x+1, y+1, z+0)`
  * @param p001 - the value from relative position `(x+0, y+0, z+1)`
+ * @param p010 - the value from relative position `(x+0, y+1, z+0)`
  * @param p011 - the value from relative position `(x+0, y+1, z+1)`
+ * @param p100 - the value from relative position `(x+1, y+0, z+0)`
  * @param p101 - the value from relative position `(x+1, y+0, z+1)`
+ * @param p110 - the value from relative position `(x+1, y+1, z+0)`
  * @param p111 - the value from relative position `(x+1, y+1, z+1)`
  * @param xMid - the fractional position between the x values [0,1]
  * @param yMid - the fractional position between the y values [0,1]
@@ -62,23 +62,22 @@ export const interpolate2d = (
 /*@__PURE__*/
 export const interpolate3d = (
 	p000: number,
-	p010: number,
-	p100: number,
-	p110: number,
 	p001: number,
+	p010: number,
 	p011: number,
+	p100: number,
 	p101: number,
+	p110: number,
 	p111: number,
 	xMid: number,
 	yMid: number,
 	zMid: number
-): number => {
-	return interpolate(
+): number =>
+	interpolate(
 		interpolate2d(p000, p010, p100, p110, xMid, yMid),
 		interpolate2d(p001, p011, p101, p111, xMid, yMid),
 		zMid
 	);
-};
 
 /**
  * Quadralinear interpolation
@@ -86,20 +85,20 @@ export const interpolate3d = (
  * the p inputs are the values at relative points
  *
  * @param p0000 - the value from relative position `(x+0, y+0, z+0, w+0)`
- * @param p0100 - the value from relative position `(x+0, y+1, z+0, w+0)`
- * @param p1000 - the value from relative position `(x+1, y+0, z+0, w+0)`
- * @param p1100 - the value from relative position `(x+1, y+1, z+0, w+0)`
- * @param p0010 - the value from relative position `(x+0, y+0, z+1, w+0)`
- * @param p0110 - the value from relative position `(x+0, y+1, z+1, w+0)`
- * @param p1010 - the value from relative position `(x+1, y+0, z+1, w+0)`
- * @param p1110 - the value from relative position `(x+1, y+1, z+1, w+0)`
  * @param p0001 - the value from relative position `(x+0, y+0, z+0, w+1)`
- * @param p0101 - the value from relative position `(x+0, y+1, z+0, w+1)`
- * @param p1001 - the value from relative position `(x+1, y+0, z+0, w+1)`
- * @param p1101 - the value from relative position `(x+1, y+1, z+0, w+1)`
+ * @param p0010 - the value from relative position `(x+0, y+0, z+1, w+0)`
  * @param p0011 - the value from relative position `(x+0, y+0, z+1, w+1)`
+ * @param p0100 - the value from relative position `(x+0, y+1, z+0, w+0)`
+ * @param p0101 - the value from relative position `(x+0, y+1, z+0, w+1)`
+ * @param p0110 - the value from relative position `(x+0, y+1, z+1, w+0)`
  * @param p0111 - the value from relative position `(x+0, y+1, z+1, w+1)`
+ * @param p1000 - the value from relative position `(x+1, y+0, z+0, w+0)`
+ * @param p1001 - the value from relative position `(x+1, y+0, z+0, w+1)`
+ * @param p1010 - the value from relative position `(x+1, y+0, z+1, w+0)`
  * @param p1011 - the value from relative position `(x+1, y+0, z+1, w+1)`
+ * @param p1100 - the value from relative position `(x+1, y+1, z+0, w+0)`
+ * @param p1101 - the value from relative position `(x+1, y+1, z+0, w+1)`
+ * @param p1110 - the value from relative position `(x+1, y+1, z+1, w+0)`
  * @param p1111 - the value from relative position `(x+1, y+1, z+1, w+1)`
  * @param xMid - the fractional position between the x values [0,1]
  * @param yMid - the fractional position between the y values [0,1]
@@ -110,35 +109,35 @@ export const interpolate3d = (
 /*@__PURE__*/
 export const interpolate4d = (
 	p0000: number,
-	p0100: number,
-	p1000: number,
-	p1100: number,
-	p0010: number,
-	p0110: number,
-	p1010: number,
-	p1110: number,
 	p0001: number,
-	p0101: number,
-	p1001: number,
-	p1101: number,
+	p0010: number,
 	p0011: number,
+	p0100: number,
+	p0101: number,
+	p0110: number,
 	p0111: number,
+	p1000: number,
+	p1001: number,
+	p1010: number,
 	p1011: number,
+	p1100: number,
+	p1101: number,
+	p1110: number,
 	p1111: number,
 	xMid: number,
 	yMid: number,
 	zMid: number,
 	wMid: number
-): number => {
-	return interpolate(
+): number =>
+	interpolate(
 		interpolate3d(
 			p0000,
-			p0100,
-			p1000,
-			p1100,
 			p0010,
+			p0100,
 			p0110,
+			p1000,
 			p1010,
+			p1100,
 			p1110,
 			xMid,
 			yMid,
@@ -146,12 +145,12 @@ export const interpolate4d = (
 		),
 		interpolate3d(
 			p0001,
-			p0101,
-			p1001,
-			p1101,
 			p0011,
+			p0101,
 			p0111,
+			p1001,
 			p1011,
+			p1101,
 			p1111,
 			xMid,
 			yMid,
@@ -159,7 +158,6 @@ export const interpolate4d = (
 		),
 		wMid
 	);
-};
 
 /**
  * Linear Interpolation aka LERP

@@ -1,6 +1,6 @@
 import test from 'ava';
-import { aleaFactory } from '../../src/random/alea';
-import { isUniform, isNormal } from '../testUtil';
+import { isUniform } from '../testUtil';
+import { aleaFactory } from './../../src/random/alea';
 
 test('Alea Factory type tests', (t) => {
 	const alea = aleaFactory();
@@ -51,9 +51,7 @@ test('State Tests', (t) => {
 
 test('Uniform Distribution', (t) => {
 	const rand = aleaFactory().random;
-	const data = Array.from({ length: 1e5 }).map(() => rand());
+	const data = Array.from({ length: 1e6 }).map(() => rand());
 	const results = isUniform(data);
-	const normal = isNormal(data);
 	t.true(results.passed, `p value: ${results.statistics.toFixed(3)}`);
-	t.false(normal.passed, `U value: ${normal.statistics.toFixed(3)}`);
 });
